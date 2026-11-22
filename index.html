@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<script src="config.js"></script>
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>MotoExtra</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--tx:#f1f5f9;--mut:#94a3b8;--ac:#f97316;--ok:#22c55e;--bad:#ef4444;--warn:#eab308}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:24px}
+header{padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:18px;margin:0}
+.odo{background:var(--card);border-radius:12px;padding:6px 12px;font-weight:700;cursor:pointer}
+.odo small{display:block;color:var(--mut);font-weight:400;font-size:11px}
+main{padding:8px 16px;max-width:640px;margin:auto}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:14px;color:var(--mut);margin:0 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card2);border-radius:10px;padding:10px}
+.stat b{display:block;font-size:20px}
+.stat span{color:var(--mut);font-size:12px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font-family:inherit;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:var(--tx);font-size:16px}
+button{border:0;border-radius:10px;padding:12px 16px;font-size:16px;font-weight:600;background:var(--ac);color:#fff;width:100%;margin-top:14px;cursor:pointer}
+button.sec{background:var(--card2);color:var(--tx)}
+button.sm{width:auto;padding:6px 10px;font-size:13px;margin:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #334155}
+.row:last-child{border:0}
+.row small{color:var(--mut);display:block}
+.del{background:none;color:var(--mut);width:auto;padding:4px 8px;margin:0;font-size:18px}
+.bar{height:8px;background:#0f172a;border-radius:6px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%}
+/* menu lateral: abre pelo botao ☰ ou puxando a tela para o lado */
+nav{position:fixed;top:0;bottom:0;left:0;width:260px;max-width:80vw;background:var(--card);display:flex;flex-direction:column;overflow-y:auto;padding:calc(env(safe-area-inset-top) + 8px) 0 env(safe-area-inset-bottom);border-right:1px solid #334155;z-index:80;transform:translateX(-102%);transition:transform .22s ease;box-shadow:4px 0 24px #0008}
+nav.open{transform:none}
+nav .nvT{padding:12px 20px 14px;font-weight:700;font-size:18px;border-bottom:1px solid #334155;margin-bottom:6px}
+nav a{display:flex;align-items:center;gap:14px;padding:14px 20px;font-size:16px;color:var(--tx);cursor:pointer}
+nav a span{font-size:22px;width:28px;text-align:center}
+nav a.on{color:var(--ac);background:var(--card2);font-weight:600}
+#navBg{position:fixed;inset:0;background:#0009;z-index:79;display:none}
+#navBg.open{display:block}
+button.menu{width:auto;margin:0 8px 0 0;padding:4px 10px;background:var(--card);color:var(--tx);font-size:20px;vertical-align:middle}
+.tab{display:none}.tab.on{display:block}
+.lem{display:flex;justify-content:space-between;align-items:center;gap:10px;border-left:5px solid var(--ac)}
+.lem span{cursor:pointer;flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.chips button{width:auto;margin:0;padding:11px 14px;font-size:15px;background:var(--card2);color:var(--tx);border:2px solid transparent}
+.chips button.on{background:var(--ac);border-color:#fff3}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button.big{padding:16px;font-size:18px}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;z-index:90;display:none;max-width:90%;text-align:center;box-shadow:0 4px 16px #0006}
+.hint{color:var(--mut);font-size:12px;margin-top:8px}
+.bk{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+</style>
+</head>
+<body>
+<div id="auth" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto"><div style="max-width:420px;margin:0 auto;padding:40px 20px">
+  <div style="text-align:center;font-size:56px">🏍️</div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">MotoExtra</h1>
+  <div class="hint" style="text-align:center;margin:0 0 20px">Controle de ganhos, gastos e manutenção da sua moto</div>
+  <div class="card"><h2 id="aTitle">Entrar</h2>
+    <label>E-mail</label><input id="aMail" type="email" autocomplete="email" inputmode="email">
+    <label>Senha</label><input id="aPass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
+    <div id="aMsg" class="hint" style="font-size:14px"></div>
+    <button id="aBtn" onclick="doAuth()">Entrar</button>
+    <button id="aTgl" class="sec" onclick="authMode(!modoCad)">Criar conta nova</button>
+    <div id="aFgt" style="text-align:center;margin-top:14px"><a style="color:var(--mut);font-size:14px;text-decoration:underline;cursor:pointer" onclick="esqueci()">Esqueci minha senha</a></div>
+  </div></div></div>
+<div id="paywall" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto"><div style="max-width:420px;margin:0 auto;padding:40px 20px;text-align:center">
+  <div style="font-size:56px">🔒</div><h1 style="font-size:22px;margin:6px 0">Assine para continuar</h1>
+  <p id="pwInfo" class="hint" style="font-size:15px"></p>
+  <div class="card"><div id="pwPreco" style="font-size:22px;font-weight:700"></div>
+    <button id="pwBtn1" onclick="pagar()">Pagar com Pix ou cartão</button>
+    <button id="pwBtn2" class="sec" onclick="recheck()">Já paguei — verificar</button>
+    <button class="sec" onclick="sair()">Sair</button></div>
+  <div class="hint">O pagamento é feito no Mercado Pago, com Pix ou cartão. Seu acesso é liberado automaticamente em instantes e seus dados continuam guardados.</div></div></div>
+<header><h1><button class="menu" onclick="menu(true)" aria-label="Abrir menu">☰</button><span id="hdrAv" onclick="goTab('perfil')" style="cursor:pointer;display:inline-flex;vertical-align:middle;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card2);align-items:center;justify-content:center;font-size:18px;margin-right:6px">🏍️</span><span id="hdrT">MotoExtra</span> <small id="syncSt" style="font-size:11px;color:var(--mut);font-weight:400"></small></h1><div class="odo" id="odoBtn" onclick="setOdo()"><small id="odoLbl">Odômetro</small><span id="odoV">-</span></div></header>
+<main>
+<div id="banner"></div>
+
+<section class="tab on" id="t-resumo">
+  <div class="card" id="helpCard" style="display:none"><h2>Primeiros passos</h2><div id="helpBox"></div></div>
+  <div class="card"><label style="margin:0 0 4px">Período</label>
+    <select id="per" onchange="render()"><option value="hoje">Hoje</option><option value="semana">Últimos 7 dias</option><option value="mes" selected>Este mês</option><option value="tudo">Tudo</option></select></div>
+  <div class="card"><h2>Metas de ganho</h2><div id="goalBox"></div>
+    <button class="sec" onclick="setGoal()">Definir metas</button></div>
+  <div class="card"><h2>Contas x renda do mês</h2><div id="billsBox"></div></div>
+  <div class="card"><h2>Ganhos x gastos — últimos 14 dias</h2><div id="chDays"></div>
+    <div class="hint"><span style="color:var(--ac)">■</span> ganho &nbsp;<span style="color:var(--bad)">■</span> gasto &nbsp;<span style="color:var(--warn)">┅</span> meta</div></div>
+  <div class="card"><h2>Consumo por tanque (km/l)</h2><div id="chKml"></div></div>
+  <div class="card"><h2>Custo por km da moto</h2><div id="costBox"></div></div>
+  <div class="card"><h2>Resultado</h2><div class="grid" id="resGrid"></div></div>
+  <div class="card"><h2>Gastos por categoria</h2><div id="chCat"></div></div>
+  <div class="card"><h2>Por tipo de corrida</h2><div id="porTipo"></div></div>
+  <div class="card"><h2>Combustível</h2><div class="grid" id="fuelGrid"></div></div>
+  <div class="card"><h2>Alertas de manutenção</h2><div id="alertas"></div></div>
+</section>
+
+<section class="tab" id="t-ganhos">
+  <div class="card"><label style="margin:0 0 4px">Período</label>
+    <select id="gPer" onchange="render()"><option value="hoje">Hoje</option><option value="semana">Últimos 7 dias</option><option value="mes" selected>Este mês</option><option value="tudo">Tudo</option></select></div>
+  <div class="card"><h2>Ganhos e lucro final</h2><div id="gBox"></div></div>
+  <div class="card"><h2>Relatório do período</h2>
+    <button class="sec" onclick="baixarCSV()">Baixar planilha (CSV)</button>
+    <button class="sec" onclick="relatorioPDF()">Relatório em PDF (imprimir)</button>
+    <div class="hint">Usa o período escolhido acima e a moto selecionada. A planilha abre no Excel ou no Google Planilhas. No PDF, escolha "Salvar como PDF" na impressão.</div></div>
+  <div class="card"><h2>Ganho por plataforma</h2><div id="gPlat"></div></div>
+  <div class="card"><h2>⏰ Melhor horário para rodar</h2><div id="gHora"></div>
+    <details id="tuBox" style="margin-top:10px"><summary>Meus turnos de trabalho</summary>
+      <div class="hint">Cadastre os horários em que você costuma rodar. A análise acima passa a comparar quanto cada turno rende por hora.</div>
+      <div id="tuList"></div>
+      <div id="tuDias" class="chips" style="margin-top:8px"></div>
+      <div class="two"><div><label>Começa</label><input id="tuIni" type="time"></div><div><label>Termina</label><input id="tuFim" type="time"></div></div>
+      <button class="sec" onclick="tuSalvar()">Adicionar turno</button></details></div>
+  <div class="card"><h2>Ganho x lucro — últimos 14 dias</h2><div id="gChart"></div>
+    <div class="hint"><span style="color:var(--ac)">■</span> ganho &nbsp;<span style="color:var(--ok)">■</span> lucro do dia</div></div>
+  <div class="card"><h2>Dia a dia</h2><div id="gDias"></div></div>
+</section>
+
+<section class="tab" id="t-corrida">
+  <div class="card"><h2 id="rTitle">Nova corrida</h2>
+    <button id="rRep" type="button" class="sec" style="display:none;margin:0 0 10px;font-size:14px;padding:10px" onclick="repetirUltima()"></button>
+    <div id="rChips" class="chips"></div><select id="rCat" hidden></select>
+    <div id="gpsBox" style="background:var(--card2);border-radius:12px;padding:12px;margin:12px 0 2px">
+      <div id="gpsTxt" style="font-size:14px"></div>
+      <button id="gpsBtn" type="button" onclick="mkAcao()" style="margin-top:10px"></button>
+      <div style="display:flex;gap:8px"><button id="gpsAlt" type="button" class="sec" onclick="mkAlt()" style="font-size:14px;padding:10px"></button><button id="gpsCan" type="button" class="sec" onclick="mkLimpar()" style="font-size:14px;padding:10px;display:none">Limpar</button></div>
+      <button type="button" class="sec" onclick="$('gpxFile').click()" style="font-size:14px;padding:10px">📂 Importar trajeto do GPS (GPX)</button>
+      <input id="gpxFile" type="file" accept=".gpx,.xml,application/gpx+xml,text/xml" multiple style="display:none" onchange="gpxImport(this)">
+      <div id="gpxInfo" class="hint" style="margin:8px 0 0"></div>
+    </div>
+    <div class="two">
+      <div><label>Km até buscar</label><input id="rKmB" type="number" inputmode="decimal" placeholder="1,5" oninput="liveRide()" onkeydown="if(event.key==='Enter'){event.preventDefault();$('rKmC').focus()}"></div>
+      <div><label>Km da corrida</label><input id="rKmC" type="number" inputmode="decimal" placeholder="4,5" oninput="liveRide()" onkeydown="if(event.key==='Enter'){event.preventDefault();$('rGain').focus()}"></div>
+    </div>
+    <label>Valor da corrida (R$)</label><input id="rGain" type="number" inputmode="decimal" placeholder="18,50" oninput="liveRide()" onkeydown="if(event.key==='Enter'){event.preventDefault();addRide()}">
+    <div id="rLive" class="hint" style="font-size:14px;color:var(--tx)"></div>
+    <div class="hint" style="margin:10px 0 0">📅 <b id="rDateTxt">Hoje</b> · <a onclick="mostraData(true)" style="text-decoration:underline;cursor:pointer">mudar o dia</a></div>
+    <input id="rDate" type="date" style="display:none;margin-top:6px" onchange="rDataTxt()">
+    <div id="rHoraLbl" class="hint" style="display:none;margin:8px 0 2px">Hora da corrida (deixe vazio para usar o horário em que você lançou)</div>
+    <input id="rHora" type="time" style="display:none">
+    <button id="rBtn" class="big" onclick="addRide()">Salvar corrida</button>
+    <button id="rCancel" class="sec" style="display:none" onclick="cancelRide()">Cancelar edição</button>
+    <div id="rHoje" class="hint" style="font-size:13px"></div></div>
+  <div class="card"><h2>🕒 Jornada do dia</h2>
+    <div class="hint" style="margin-top:0">Registre a hora em que começou e terminou de rodar. É ela que conta como tempo trabalhado na análise de melhor horário, mesmo que você lance as corridas só no fim.</div>
+    <label>Dia</label><input id="jDate" type="date" onchange="renderJornada()">
+    <div id="jTurnos"></div>
+    <div class="two"><div><label>Comecei às <a onclick="jAgora('jIni')" style="text-decoration:underline;cursor:pointer">agora</a></label><input id="jIni" type="time"></div><div><label>Terminei às <a onclick="jAgora('jFim')" style="text-decoration:underline;cursor:pointer">agora</a></label><input id="jFim" type="time"></div></div>
+    <button onclick="jSalvar()">Salvar jornada</button>
+    <div id="jList" style="margin-top:8px"></div></div>
+  <div class="card"><h2>🏁 Fechar o dia</h2>
+    <label>Odômetro da moto agora (km)</label><input id="fcOdo" type="number" inputmode="decimal" placeholder="o total que aparece no painel" onkeydown="if(event.key==='Enter'){event.preventDefault();fecharDia()}">
+    <div id="fcInfo" class="hint"></div>
+    <button class="big" onclick="fecharDia()">Fechar o dia</button>
+    <div class="hint">Digite o total do painel da moto no fim do dia. O app descobre quantos km foram fora de corrida (trabalho CLT, pessoal) e usa o odômetro real nos avisos de manutenção.</div></div>
+  <div class="card"><h2>Histórico por dia</h2>
+    <div class="two"><div><label>De</label><input id="hDe" type="date" onchange="histDias=14;render()"></div><div><label>Até</label><input id="hAte" type="date" onchange="histDias=14;render()"></div></div>
+    <div style="display:flex;gap:8px"><button class="sec sm" style="margin-top:10px" onclick="histHoje()">Hoje</button><button class="sec sm" style="margin-top:10px" onclick="histLimpar()">Todos os dias</button></div>
+    <div id="hSum" class="hint"></div>
+    <div class="hint">Para ver um dia só, escolha a mesma data em "De" e "Até".</div></div>
+  <div id="rList"></div>
+</section>
+
+<section class="tab" id="t-abast">
+  <div class="card"><h2 id="fTitle">Novo abastecimento</h2>
+    <label>Odômetro atual (km)</label><input id="fOdo" type="number" inputmode="decimal">
+    <label>Litros</label><input id="fL" type="number" inputmode="decimal" placeholder="ex: 8,5">
+    <label>Valor total pago (R$)</label><input id="fT" type="number" inputmode="decimal" placeholder="ex: 52,00">
+    <label>Data</label><input id="fDate" type="date">
+    <label>Pagar com (opcional)</label><select id="fConta"></select>
+    <button id="fBtn" onclick="addFuel()">Salvar</button>
+    <button id="fCancel" class="sec" style="display:none" onclick="cancelFuel()">Cancelar edição</button>
+    <div class="hint">Encha o tanque sempre até o topo para o consumo (km/l) ficar exato.</div></div>
+  <div class="card"><h2>Histórico</h2><div id="fList"></div></div>
+</section>
+
+<section class="tab" id="t-gastos">
+  <div class="card"><h2>Contas a pagar</h2><div id="bList"></div>
+    <label>Conta (ex: Parcela da moto, aluguel, luz, cartão)</label><input id="bName" type="text">
+    <label>Tipo</label><select id="bGrp"><option>Moto</option><option>Casa</option><option>Cartão / dívida</option><option>Outros</option></select>
+    <label>Valor (R$)</label><input id="bVal" type="number" inputmode="decimal">
+    <label>Vencimento</label><input id="bDue" type="date">
+    <label>Repete</label><select id="bRec"><option value="1">Todo mês</option><option value="0">Só uma vez</option></select>
+    <button onclick="addBill()">Adicionar conta</button>
+    <div class="hint">Ao tocar em "Paguei", a conta sai da lista (ou vai para o próximo mês, se repete). Contas do tipo Moto também viram gasto; as demais são descontadas da sua renda no Resumo.</div></div>
+  <div class="card"><h2>Taxa diária da plataforma</h2>
+    <div class="hint" style="margin:0 0 6px">Se a plataforma cobra um plano por dia (ex.: 99 a R$ 3,99), o app desconta essa taxa do lucro do dia dela e o líquido passa a bater com o saque. Ative para lançar sozinho na primeira corrida de cada dia.</div>
+    <div id="txLista"></div>
+    <div class="two"><div><label>Plataforma</label><select id="txPlat"><option value="99">99</option><option value="Uber">Uber</option><option value="iFood">iFood</option></select></div>
+      <div><label>Valor por dia (R$)</label><input id="txVal" type="number" inputmode="decimal" placeholder="3,99"></div></div>
+    <button class="sec" onclick="txSalvar()">Ativar lançamento automático</button>
+    <button class="sec" onclick="txHoje()">Lançar a taxa de hoje agora</button></div>
+  <div class="card"><h2 id="eTitle">Novo gasto</h2>
+    <label>Categoria</label><select id="eCat"></select>
+    <label>Valor (R$)</label><input id="eVal" type="number" inputmode="decimal">
+    <label>Descrição — opcional</label><input id="eNote" type="text">
+    <label>Data</label><input id="eDate" type="date">
+    <label>Pagar com (opcional)</label><select id="eConta"></select>
+    <button id="eBtn" onclick="addExp()">Salvar</button>
+    <button id="eCancel" class="sec" style="display:none" onclick="cancelExp()">Cancelar edição</button></div>
+  <div class="card"><h2>Histórico</h2><div id="eList"></div></div>
+</section>
+
+<section class="tab" id="t-contas">
+  <div class="card"><h2>Saldos</h2><div id="cSaldos"></div></div>
+  <div class="card"><h2>Dividir saque</h2>
+    <label>De onde veio</label><select id="sqOrig"><option>99</option><option>Uber</option><option>iFood</option><option>Outro</option></select>
+    <label>Valor sacado (R$)</label><input id="sqVal" type="number" inputmode="decimal" placeholder="ex: 500,00" oninput="sqCalc()">
+    <label>Data</label><input id="sqDate" type="date">
+    <label style="margin-top:14px">Quanto vai para cada conta</label>
+    <div id="sqParts"></div>
+    <div id="sqResto" class="hint" style="font-size:14px;color:var(--tx)"></div>
+    <button class="big" onclick="sqSalvar()">Registrar divisão</button>
+    <div id="sqDica" class="hint"></div>
+    <div class="hint">Defina o percentual de cada conta em "Cadastrar conta" para o app preencher a divisão sozinho. O que sobrar vai para a conta de Lucro.</div></div>
+  <div class="card"><h2>Nova movimentação</h2>
+    <label>Tipo</label><select id="mvTipo" onchange="mvTipoUI()"><option value="in">Entrada</option><option value="out">Saída</option><option value="tr">Transferência entre contas</option></select>
+    <label id="mvLblConta">Conta</label><select id="mvConta"></select>
+    <div id="mvDestWrap" style="display:none"><label>Para a conta</label><select id="mvDest"></select></div>
+    <label>Valor (R$)</label><input id="mvVal" type="number" inputmode="decimal">
+    <label>Descrição</label><input id="mvDesc" type="text" maxlength="60" placeholder="ex: Almoço, saque 99">
+    <label>Data</label><input id="mvDate" type="date">
+    <button onclick="mvSalvar()">Salvar movimentação</button></div>
+  <div class="card"><h2>Extrato</h2>
+    <label style="margin-top:0">Conta</label><select id="exConta" onchange="render()"></select>
+    <div id="exLista"></div></div>
+  <div class="card"><h2 id="acTitle">Cadastrar conta</h2>
+    <label>Nome da conta</label><input id="acNome" type="text" maxlength="30" placeholder="ex: Banco do Brasil">
+    <label>Finalidade</label><select id="acFin"><option>Lucro</option><option>Manutenção</option><option>Gastos diários</option><option>Reserva</option><option>Outra</option></select>
+    <label>Saldo inicial (R$)</label><input id="acSaldo" type="number" inputmode="decimal" placeholder="0,00">
+    <label>Percentual do saque (%) — opcional</label><input id="acPct" type="number" inputmode="decimal" placeholder="ex: 10">
+    <button id="acBtn" onclick="acSalvar()">Adicionar conta</button>
+    <button id="acCancel" class="sec" style="display:none" onclick="cancelConta()">Cancelar edição</button>
+    <div class="hint">Os saldos são calculados pelo app: saldo inicial + entradas − saídas. Não é ligado ao banco; você lança as movimentações.</div></div>
+</section>
+
+<section class="tab" id="t-manut">
+  <div class="card"><h2>Manutenção</h2><div id="mList"></div>
+    <button class="sec" onclick="addMaint()">+ Novo item</button></div>
+</section>
+
+<section class="tab" id="t-perfil">
+  <div class="card"><h2>Meu perfil</h2>
+    <div style="display:flex;gap:14px;align-items:center">
+      <div id="pfAv" style="width:76px;height:76px;flex:none;border-radius:50%;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:34px">🏍️</div>
+      <div style="flex:1"><label style="margin-top:0">Seu nome</label><input id="pfName" type="text" maxlength="40" placeholder="Como quer ser chamado" onchange="setNome()"></div></div>
+    <div style="display:flex;gap:8px"><button class="sec" onclick="$('pfFile').click()">Trocar foto</button><button class="sec" onclick="delFoto()">Remover foto</button></div>
+    <input id="pfFile" type="file" accept="image/*" hidden onchange="setFoto(this)"></div>
+  <div class="card"><h2 id="vTitle">Meus veículos</h2><div id="bikeList"></div>
+    <label>Apelido do veículo</label><input id="vName" type="text" maxlength="30" placeholder="ex: Minha Fan">
+    <label>Marca / modelo</label><input id="vModel" type="text" maxlength="40" placeholder="ex: Honda CG 160 Titan">
+    <label>Ano</label><input id="vYear" type="number" inputmode="numeric" placeholder="ex: 2022">
+    <label>Placa</label><input id="vPlate" type="text" maxlength="8" style="text-transform:uppercase" placeholder="ex: ABC1D23">
+    <button id="vBtn" onclick="saveBike()">Adicionar veículo</button>
+    <button id="vCancel" class="sec" style="display:none" onclick="cancelBike()">Cancelar edição</button>
+    <div class="hint">Cada veículo tem o seu próprio odômetro, corridas, abastecimentos, gastos e manutenção. Toque em "Usar" para trocar de veículo. Contas a pagar e perfil são compartilhados.</div></div>
+  <div class="card" id="acc" style="display:none"><h2>Minha conta</h2>
+    <div id="accMail"></div><div class="hint" id="accAte"></div>
+    <button id="accRenova" class="sec" onclick="pagar()">Renovar acesso (+30 dias)</button>
+    <button class="sec" onclick="sair()">Sair da conta</button></div>
+  <div class="card"><h2>Dados</h2>
+    <button class="sec" onclick="exportar()">Exportar backup</button>
+    <button class="sec" onclick="document.getElementById('imp').click()">Importar backup</button>
+    <input id="imp" type="file" accept=".json" hidden onchange="importar(this)">
+    <div class="hint">Os dados ficam só neste aparelho. Exporte de vez em quando.</div></div>
+  <div class="card"><h2>Ajuda</h2>
+    <details><summary>Como registrar uma corrida</summary><p class="hint">Na aba Corridas, escolha o tipo (99, Uber, iFood…), informe os km até buscar o cliente e os km da corrida, e o valor total. O app soma tudo no odômetro e calcula ganho por km, custo e lucro da corrida.</p></details>
+    <details><summary>Como o custo por km é calculado</summary><p class="hint">Combustível = preço do litro ÷ consumo (km/l). Manutenção = custo de cada item ÷ intervalo em km (ex.: óleo de R$ 50 a cada 1.000 km = R$ 0,05/km). Defina os custos na aba Manutenção, em Editar. O total é o custo por km da moto.</p></details>
+    <details><summary>Como o lucro é calculado</summary><p class="hint">Na aba Ganhos: ganhos brutos − combustível − manutenção − alimentação − outros gastos = lucro da moto. Descontando as contas pagas, chega-se ao lucro final.</p></details>
+    <details><summary>Uso a moto também fora das corridas (CLT, pessoal)</summary><p class="hint">Na aba Corridas, use "Fechar o dia": digite o odômetro do painel no fim do dia. O app calcula quantos km foram fora de corrida e passa a usar o odômetro real nos lembretes de manutenção (óleo, relação…). Os km fora de corrida não entram no ganho por km.</p></details>
+    <details><summary>Carteira: contas e divisão do saque</summary><p class="hint">Cadastre as contas (ex.: lucro, manutenção, gastos diários) na aba Carteira. Ao sacar da 99 ou da Uber, use "Dividir saque" para repartir o valor. Nos gastos e abastecimentos, escolha "Pagar com" para o saldo da conta cair sozinho. O saldo é calculado pelo app, não é ligado ao banco.</p></details>
+    <details><summary>Taxa diária da 99 (ou Uber, iFood)</summary><p class="hint">Na aba Gastos, em "Taxa diária da plataforma", informe o valor (ex.: 3,99) e ative. O app lança a taxa na primeira corrida do dia daquela plataforma e desconta do lucro do dia. No histórico de corridas aparece o líquido da plataforma, que deve bater com o valor do saque. Para lançar à mão, use "Lançar a taxa de hoje agora" ou escolha a categoria "Taxa 99" nos gastos.</p></details>
+    <details><summary>Lembretes de manutenção</summary><p class="hint">Cada item avisa quando você roda a quantidade de km definida desde a última vez. Toque em "Feito" quando fizer o serviço para zerar a contagem.</p></details>
+    <details><summary>Consumo (km/l)</summary><p class="hint">Lance cada abastecimento com o odômetro, os litros e o valor. Encha sempre o tanque até o topo. A partir do segundo abastecimento o app mede o consumo real.</p></details>
+    <details><summary>Várias motos e backup</summary><p class="hint">Adicione outras motos em "Minhas motos". Exporte um backup de vez em quando. Com login, os dados também ficam salvos na nuvem.</p></details>
+    <details><summary>Instalar no celular</summary><p class="hint">No Chrome, abra o menu (⋮) e escolha "Instalar app" ou "Adicionar à tela inicial". No iPhone, use Compartilhar → Adicionar à Tela de Início.</p></details>
+  </div>
+</section>
+<div class="hint" style="text-align:center;margin:16px 0">MotoExtra v11</div>
+</main>
+
+<div id="toast"></div>
+<div id="navBg" onclick="menu(false)"></div>
+<nav id="nav">
+  <div class="nvT">🏍️ MotoExtra</div>
+  <a class="on" data-t="resumo"><span>📊</span>Resumo</a>
+  <a data-t="ganhos"><span>💰</span>Ganhos</a>
+  <a data-t="corrida"><span>🛵</span>Corridas</a>
+  <a data-t="abast"><span>⛽</span>Abastecer</a>
+  <a data-t="gastos"><span>💸</span>Gastos</a>
+  <a data-t="contas"><span>🏦</span>Carteira</a>
+  <a data-t="manut"><span>🔧</span>Manutenção</a>
+  <a data-t="perfil"><span>👤</span>Perfil</a>
+</nav>
+
+<script>
+const CATS={c99:"99 Corrida",e99:"99 Entregas",cuber:"Uber Corrida",euber:"Uber Entregas",ifood:"iFood",trabalho:"Trabalho / deslocamento",pessoal:"Pessoal / lazer",uber:"Uber",n99:"99",entrega:"Entrega"};
+const CATS_NOVAS=["c99","e99","cuber","euber","ifood","trabalho","pessoal"]; // uber/n99/entrega ficam só para registros antigos
+const ECATS=["Manutenção","Peças","Óleo","Pedágio","Estacionamento","Lavagem","Café da manhã","Almoço","Janta","Multa","Documentação/IPVA","Seguro","Taxa 99","Taxa Uber","Taxa iFood","Contas da moto","Outros"];
+const TAXA_CATS=["Taxa 99","Taxa Uber","Taxa iFood"]; // taxa/plano diario cobrado pela plataforma: abate o lucro do dia da plataforma
+const platOf=c=>({c99:"99",e99:"99",n99:"99",cuber:"Uber",euber:"Uber",uber:"Uber",ifood:"iFood"})[c]||null;
+let KEY="minhamoto.v1"; // com login, vira minhamoto.u.<id do usuario>
+const CFG=window.MOTO_CONFIG||{};
+const def=()=>({odo:null,rides:[],fuels:[],exps:[],maint:[
+ {id:1,name:"Troca de óleo",interval:1000,warn:900,cost:0,last:null},
+ {id:3,name:"Regulagem de corrente",interval:1000,warn:900,cost:0,last:null},
+ {id:6,name:"Troca de relação",interval:2500,warn:2000,cost:0,last:null},
+ {id:2,name:"Revisão geral",interval:6000,warn:5500,cost:0,last:null},
+ {id:4,name:"Pastilhas de freio",interval:2000,warn:1800,cost:0,last:null},
+ {id:5,name:"Pneus (par)",interval:15000,warn:14000,cost:0,last:null}],v:3});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let S;
+const readLocal=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const fixHora=()=>S.rides.forEach(r=>{if(!r.hora&&r.id>1e12)r.hora=new Date(r.id).toTimeString().slice(0,5)}); // horario = momento em que a corrida foi lancada
+function normalize(){ // completa/migra os dados carregados (local ou nuvem)
+  fixHora();
+  S.bills=S.bills||[];S.paid=S.paid||[];S.profile=S.profile||{name:"",photo:""};
+  if(!S.bikes||!S.bikes.length)S.bikes=[{id:"b1",name:"Minha moto",model:"",year:"",plate:""}];
+  S.cur=S.cur||S.bikes[0].id;S.stash=S.stash||{};S.help=S.help||{};S.goalW=S.goalW||0;S.goalM=S.goalM||0;S.ext=S.ext||[];S.fechou=S.fechou||[];S.contas=S.contas||[];S.movs=S.movs||[];S.turnos=S.turnos||[];S.jornadas=S.jornadas||[];
+  S.cfg=S.cfg||{kml:40,price:5.72,auto:true};
+  if(!S.v){ // migra dados antigos: ajusta padroes e cria lembretes
+    const d=def(),o=S.odo;
+    S.maint.forEach(m=>{const n=d.maint.find(x=>x.id===m.id);if(n){m.name=n.name;m.interval=n.interval;m.warn=n.warn}else if(m.warn==null)m.warn=Math.round(m.interval*.9)});
+    d.maint.forEach(n=>{if(!S.maint.some(x=>x.id===n.id))S.maint.push({...n,last:o})});
+    S.v=2;
+  }
+  if(S.v<3){ // custos e intervalos informados pelo usuario (aplicado uma unica vez)
+    const d=def(),C={1:47,3:0,6:199.99,2:400,4:69.9,5:690}; // custos informados pelo dono; contas novas comecam com custo zero
+    S.maint.forEach(m=>{const n=d.maint.find(x=>x.id===m.id);if(n){m.cost=C[m.id]??0;m.name=n.name;if(m.id===4){m.interval=n.interval;m.warn=n.warn}}});
+    if(S.cfg.price==null||S.cfg.price===6)S.cfg.price=5.72;
+    S.v=3;
+  }
+}
+S=readLocal(KEY)||def();normalize();localStorage.setItem(KEY,JSON.stringify(S));
+const save=()=>{S._u=Date.now();localStorage.setItem(KEY,JSON.stringify(S));cloudPush()};
+const $=id=>document.getElementById(id);
+const uid=()=>Date.now()+Math.random();
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const num=v=>parseFloat(String(v).replace(",","."));
+const brl=v=>(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const n1=v=>(v||0).toLocaleString("pt-BR",{maximumFractionDigits:1});
+const fdate=d=>d.split("-").reverse().join("/");
+
+function inPer(d,p=$("per").value){
+  if(p==="tudo")return true;
+  const t=today();
+  if(p==="hoje")return d===t;
+  if(p==="mes")return d.slice(0,7)===t.slice(0,7);
+  const lim=new Date(Date.now()-6*864e5);
+  return d>=new Date(lim-lim.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+}
+function setOdo(){
+  const v=prompt("Quilometragem atual da moto (km):",S.odo??"");
+  if(v===null)return;const n=num(v);if(isNaN(n)||n<0)return;
+  const first=S.odo==null;S.odo=n;
+  if(first)S.maint.forEach(m=>{if(m.last==null)m.last=n});
+  save();render();
+}
+function setGoal(){
+  const ask=(t,cur)=>{const v=prompt(t+" (R$) — 0 para remover, vazio para manter:",cur||"");
+    if(v===null)return null;if(v.trim()==="")return cur||0;const n=num(v);return isNaN(n)||n<0?(cur||0):n};
+  const d=ask("Meta de ganho por DIA",S.goal);if(d===null)return;
+  const w=ask("Meta de ganho por SEMANA (segunda a domingo)",S.goalW);if(w===null)return;
+  const m=ask("Meta de ganho por MÊS",S.goalM);if(m===null)return;
+  S.goal=d;S.goalW=w;S.goalM=m;save();render();
+}
+const dkey=t=>{const d=new Date(t);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+function dayTot(k){
+  return {g:S.rides.filter(r=>r.date===k).reduce((a,r)=>a+r.gain,0),
+    c:S.fuels.filter(f=>f.date===k).reduce((a,f)=>a+f.t,0)+S.exps.filter(e=>e.date===k).reduce((a,e)=>a+e.val,0)};
+}
+function barsSvg(vals,labels,goal,cols){
+  const W=320,H=150,pb=22,pt=8,n=vals.length;
+  const mx=Math.max(goal||0,...vals.flat(),1)*1.1,by=v=>H-pb-(v/mx)*(H-pb-pt),bw=W/n;
+  const k=cols.length,w=(bw-6)/k;
+  let o=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">`;
+  vals.forEach((v,i)=>{
+    v.forEach((x,j)=>{if(x>0)o+=`<rect x="${i*bw+3+j*w}" y="${by(x)}" width="${w-1}" height="${H-pb-by(x)}" rx="2" fill="${cols[j]}"/>`});
+    o+=`<text x="${i*bw+bw/2}" y="${H-7}" font-size="9" text-anchor="middle" fill="#94a3b8">${labels[i]}</text>`;
+  });
+  if(goal)o+=`<line x1="0" x2="${W}" y1="${by(goal)}" y2="${by(goal)}" stroke="#eab308" stroke-dasharray="4 3"/><text x="${W-2}" y="${by(goal)-3}" font-size="9" text-anchor="end" fill="#eab308">${brl(goal)}</text>`;
+  return o+"</svg>";
+}
+function renderCharts(){
+  const t=today(),goal=S.goal||0,f=dayTot(t).g;
+  if(goal){const p=Math.min(100,f/goal*100),rest=goal-f;
+    let hit=0;const m=t.slice(0,7);const days=new Set(S.rides.filter(r=>r.date.slice(0,7)===m).map(r=>r.date));
+    days.forEach(d=>{if(dayTot(d).g>=goal)hit++});
+    $("goalBox").innerHTML=`<div style="display:flex;justify-content:space-between"><b>${brl(f)}</b><span style="color:var(--mut)">de ${brl(goal)} hoje</span></div>
+      <div class="bar" style="height:12px"><i style="width:${p}%;background:${f>=goal?"var(--ok)":"var(--ac)"}"></i></div>
+      <div class="hint">${f>=goal?"🎉 Meta batida! +"+brl(-rest):"Faltam "+brl(rest)+" para a meta de hoje"}<br>Metas batidas neste mês: ${hit} de ${days.size} dias trabalhados</div>`;
+  }else $("goalBox").innerHTML='';
+  { // metas da semana (segunda a domingo) e do mes
+    const dow=(new Date(t+"T12:00:00").getDay()+6)%7,ws=addDays(t,-dow),we=addDays(t,6-dow);
+    const gw=S.rides.filter(r=>r.date>=ws&&r.date<=we).reduce((a,r)=>a+r.gain,0);
+    const gm=S.rides.filter(r=>r.date.slice(0,7)===t.slice(0,7)).reduce((a,r)=>a+r.gain,0);
+    const bar=(lab,v,g)=>g?`<div style="margin-top:14px"><div style="display:flex;justify-content:space-between"><b>${brl(v)}</b><span style="color:var(--mut)">de ${brl(g)} ${lab}</span></div><div class="bar" style="height:12px"><i style="width:${Math.min(100,v/g*100)}%;background:${v>=g?"var(--ok)":"var(--ac)"}"></i></div><div class="hint">${v>=g?"🎉 Meta batida! +"+brl(v-g):"Faltam "+brl(g-v)}</div></div>`:"";
+    const extra=bar("na semana",gw,S.goalW||0)+bar("no mês",gm,S.goalM||0);
+    if(!goal&&!extra)$("goalBox").innerHTML='<div class="hint">Nenhuma meta definida. Toque em "Definir metas".</div>';
+    else $("goalBox").innerHTML+=extra;
+  }
+  const ds=[];for(let i=13;i>=0;i--)ds.push(dkey(Date.now()-i*864e5));
+  $("chDays").innerHTML=barsSvg(ds.map(d=>{const x=dayTot(d);return [x.g,x.c]}),ds.map(d=>d.slice(8)),goal,["#f97316","#ef4444"]);
+  const cs=consumos().slice(-10);
+  $("chKml").innerHTML=cs.length?barsSvg(cs.map(c=>[c.kml]),cs.map(c=>c.date.slice(8)+"/"+c.date.slice(5,7)),0,["#22c55e"])+
+    '<div class="hint">Média dos últimos tanques: '+n1(cs.reduce((a,c)=>a+c.kml,0)/cs.length)+' km/l</div>':'<div class="hint">Registre 2 abastecimentos para ver o consumo.</div>';
+}
+function needOdo(){if(S.odo==null){alert("Primeiro informe o odômetro atual (toque no canto superior direito).");return true}return false}
+
+function addRide(){
+  if(needOdo())return;
+  const kb=num($("rKmB").value)||0,kc=num($("rKmC").value)||0,km=kb+kc;
+  const mk=(M.tA&&M.tP&&M.tF)?{tA:M.tA,tP:M.tP,tF:M.tF}:null;if(!(km>0)&&!mk)return alert("Informe os km (até o embarque e/ou do embarque ao destino).");
+  const g=num($("rGain").value);
+  if(edR!=null){const r=S.rides.find(x=>x.id===edR);
+    if(r){S.odo=Math.max(0,S.odo+km-r.km);Object.assign(r,{date:$("rDate").value||today(),cat:$("rCat").value,km,kmB:kb,kmC:kc,gain:isNaN(g)?0:g,hora:$("rHora").value||r.hora||""});if(r.ck==null)r.ck=costs().total}
+    save();cancelRide();return render()}
+  const rdt=$("rDate").value||today();
+  S.rides.push({id:uid(),date:rdt,cat:$("rCat").value,km,kmB:kb,kmC:kc,gain:isNaN(g)?0:g,ck:costs().total,hora:$("rHora").value||(mk?hhmm(mk.tA):agora()),...(mk?{mk,pend:!(km>0)}:{})});
+  let taxaTxt="";const pl=platOf($("rCat").value),tv=(S.cfg.taxaAuto||{})[pl];
+  if(pl&&tv>0&&!S.exps.some(e=>e.date===rdt&&e.cat==="Taxa "+pl)){S.exps.push({id:uid(),date:rdt,cat:"Taxa "+pl,val:tv,note:"plano diário (automático)"});taxaTxt=" · taxa da "+pl+" lançada ("+brl(tv)+")"}
+  const antes=new Set(dueList().map(x=>x.m.id));
+  const lucro=(isNaN(g)?0:g)-km*costs().total;
+  S.odo+=km;save();if(mk){M={};mSave();mkUI()}cancelRide();render();
+  toast(`✔ Corrida salva · ${n1(km)} km${g>0?" · lucro "+brl(lucro):""}${taxaTxt}`);$("rKmB").focus();
+  const novos=dueList().filter(x=>!antes.has(x.m.id));
+  if(novos.length){notifica(novos);alert("Lembrete de manutenção:\n"+novos.map(msgDue).join("\n"))}
+}
+// Lembretes: km rodados desde a ultima vez que o item foi feito
+function dueList(){
+  if(S.odo==null)return[];
+  return S.maint.filter(m=>m.last!=null&&S.odo-m.last>=m.warn)
+    .map(m=>({m,used:S.odo-m.last,rest:m.interval-(S.odo-m.last)})).sort((a,b)=>a.rest-b.rest);
+}
+const msgDue=({m,used,rest})=>`${m.name}: ${n1(used)} km rodados — `+(rest<0?`atrasado ${n1(-rest)} km`:m.name.startsWith("Troca de rela")?`agende a troca (faltam ${n1(rest)} km)`:`faltam ${n1(rest)} km`);
+function notifica(l){try{if("Notification"in window&&Notification.permission==="granted")new Notification("MotoExtra",{body:l.map(msgDue).join("\n")})}catch(e){}}
+function pedirNotif(){if(!("Notification"in window))return alert("Este navegador não suporta notificações.");
+  Notification.requestPermission().then(p=>{alert(p==="granted"?"Notificações ativadas.":"Notificações bloqueadas.");render()})}
+let avisouAbertura=false;
+// Contas a pagar
+const addDays=(k,n)=>dkey(new Date(k+"T12:00:00").getTime()+n*864e5);
+function nextMonth(k){const [y,m,d]=k.split("-").map(Number);const t=new Date(y,m,1);
+  const last=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(Math.min(d,last)).padStart(2,"0")}`}
+function addBill(){
+  const name=$("bName").value.trim(),val=num($("bVal").value),due=$("bDue").value;
+  if(!name||!(val>0)||!due)return alert("Preencha conta, valor e vencimento.");
+  S.bills.push({id:uid(),name,val,due,grp:$("bGrp").value,rec:$("bRec").value==="1"});
+  save();["bName","bVal","bDue"].forEach(i=>$(i).value="");render();
+}
+function payBill(id){const b=S.bills.find(x=>x.id===id);
+  const v=prompt("Valor pago (R$):",b.val);if(v===null)return;const n=num(v);if(!(n>0))return;
+  if(!b.grp||b.grp==="Moto")S.exps.push({id:uid(),date:today(),cat:"Contas da moto",val:n,note:b.name});
+  else S.paid.push({id:uid(),date:today(),name:b.name,grp:b.grp,val:n});
+  if(b.rec)b.due=nextMonth(b.due);else S.bills=S.bills.filter(x=>x.id!==id);
+  save();render()}
+function delBill(id){if(confirm("Apagar esta conta?")){S.bills=S.bills.filter(x=>x.id!==id);save();render()}}
+const billsDue=()=>{const lim=addDays(today(),3);return S.bills.filter(b=>b.due<=lim).sort((a,b)=>a.due.localeCompare(b.due))};
+const billMsg=b=>{const d=Math.round((new Date(b.due+"T12:00:00")-new Date(today()+"T12:00:00"))/864e5);
+  return `${b.name} ${brl(b.val)} — `+(d<0?`vencida há ${-d} dia(s)`:d===0?"vence hoje":`vence em ${d} dia(s)`)};
+function addFuel(){
+  const odo=num($("fOdo").value),l=num($("fL").value),t=num($("fT").value);
+  if(!(odo>0&&l>0&&t>0))return alert("Preencha odômetro, litros e valor.");
+  if(edF!=null){const f=S.fuels.find(x=>x.id===edF);
+    if(f){Object.assign(f,{date:$("fDate").value||today(),odo,l,t});syncMov("f"+f.id,$("fConta").value,t,"Combustível",f.date)}
+    if(S.odo==null||odo>S.odo)S.odo=odo;
+    S.fuels.sort((a,b)=>a.odo-b.odo);save();cancelFuel();return render()}
+  const fid=uid(),fdt=$("fDate").value||today();
+  S.fuels.push({id:fid,date:fdt,odo,l,t});syncMov("f"+fid,$("fConta").value,t,"Combustível",fdt);
+  if(S.odo!=null&&odo>S.odo&&S.fechou.length)S.ext.push({id:uid(),date:$("fDate").value||today(),km:Math.round((odo-S.odo)*10)/10});
+  if(S.odo==null||odo>S.odo)S.odo=odo;
+  if(S.odo===odo)S.maint.forEach(m=>{if(m.last==null)m.last=odo});
+  S.fuels.sort((a,b)=>a.odo-b.odo);
+  save();["fL","fT"].forEach(i=>$(i).value="");render();
+}
+let edR=null,edE=null,edF=null,edB=null;
+function editFuel(id){const f=S.fuels.find(x=>x.id===id);if(!f)return;edF=id;
+  $("fOdo").value=f.odo;$("fL").value=f.l;$("fT").value=f.t;$("fDate").value=f.date;$("fConta").value=(movRef("f"+id)||{}).conta||"";
+  $("fBtn").textContent="Salvar alteração";$("fCancel").style.display="block";$("fTitle").textContent="Editar abastecimento";goTab("abast");scrollTo(0,0)}
+function cancelFuel(){edF=null;$("fL").value="";$("fT").value="";$("fOdo").value=S.odo??"";$("fDate").value=today();
+  $("fBtn").textContent="Salvar";$("fCancel").style.display="none";$("fTitle").textContent="Novo abastecimento"}
+// Veiculos: cada um guarda seus proprios dados; o ativo fica em S, os demais em S.stash
+const BIKE_KEYS=["odo","rides","fuels","exps","maint","cfg","goal","goalW","goalM","ext","fechou"];
+const bikeNow=()=>S.bikes.find(b=>b.id===S.cur)||S.bikes[0];
+function cancelBike(){edB=null;["vName","vModel","vYear","vPlate"].forEach(i=>$(i).value="");
+  $("vBtn").textContent="Adicionar veículo";$("vCancel").style.display="none";$("vTitle").textContent="Meus veículos"}
+function editBike(id){const b=S.bikes.find(x=>x.id===id);if(!b)return;edB=id;
+  $("vName").value=b.name||"";$("vModel").value=b.model||"";$("vYear").value=b.year||"";$("vPlate").value=b.plate||"";
+  $("vBtn").textContent="Salvar alteração";$("vCancel").style.display="block";$("vTitle").textContent="Editar veículo";scrollTo(0,0)}
+function saveBike(){
+  const name=$("vName").value.trim(),model=$("vModel").value.trim(),year=$("vYear").value.trim(),plate=$("vPlate").value.trim().toUpperCase();
+  if(!name&&!model)return alert("Informe o apelido ou o modelo do veículo.");
+  const nm=name||model,det={name:nm,model,year,plate};
+  if(edB){const b=S.bikes.find(x=>x.id===edB);if(b)Object.assign(b,det);save();cancelBike();return render()}
+  const b0=S.bikes[0]; // primeiro cadastro: completa o veiculo padrao em vez de criar outro
+  if(S.bikes.length===1&&b0.name==="Minha moto"&&!b0.model&&!b0.plate&&!b0.year){Object.assign(b0,det);save();cancelBike();return render()}
+  const id="b"+Date.now().toString(36);S.bikes.push({id,...det});save();cancelBike();
+  if(confirm(`"${nm}" adicionado. Usar este veículo agora?`))switchBike(id);else render()}
+function switchBike(id){
+  if(id===S.cur||!S.bikes.some(b=>b.id===id))return;
+  cancelRide();cancelExp();cancelFuel();
+  S.stash[S.cur]=Object.fromEntries(BIKE_KEYS.map(k=>[k,S[k]]));
+  const t=S.stash[id]||{odo:null,rides:[],fuels:[],exps:[],maint:def().maint,cfg:{kml:40,price:S.cfg.price||5.72,auto:true},goal:0,goalW:0,goalM:0,ext:[],fechou:[]};
+  delete S.stash[id];BIKE_KEYS.forEach(k=>S[k]=t[k]);S.cur=id;fixHora();
+  save();render();if(S.odo==null)setTimeout(setOdo,300)}
+function delBike(id){const b=S.bikes.find(x=>x.id===id);if(!b||id===S.cur||S.bikes.length<2)return;
+  if(!confirm(`Apagar "${b.name}" e TODOS os dados dele (corridas, abastecimentos, gastos e manutenção)? Não dá para desfazer.`))return;
+  S.bikes=S.bikes.filter(x=>x.id!==id);delete S.stash[id];save();render()}
+function editRide(id){const r=S.rides.find(x=>x.id===id);if(!r)return;edR=id;
+  if(![...$("rCat").options].some(o=>o.value===r.cat))$("rCat").add(new Option(CATS[r.cat]||r.cat,r.cat));
+  $("rCat").value=r.cat;$("rKmB").value=r.kmB||"";$("rKmC").value=r.kmC!=null?r.kmC:r.km;$("rGain").value=r.gain||"";$("rDate").value=r.date;liveRide();
+  $("rHora").value=r.hora||"";rDataTxt();mostraData();renderChips();
+  $("rBtn").textContent="Salvar alteração";$("rCancel").style.display="block";$("rTitle").textContent="Editar corrida";goTab("corrida");scrollTo(0,0)}
+// Custo por km da moto: combustivel (preco / consumo) + manutencao (custo do servico / km do intervalo)
+function consumoAtual(){
+  const cs=consumos().slice(-5),c=S.cfg;
+  if(c.auto&&cs.length){const l=cs.reduce((a,x)=>a+x.l,0);return {v:cs.reduce((a,x)=>a+x.km,0)/l,real:true}}
+  return {v:c.kml||40,real:false};
+}
+function precoAtual(){
+  const f=[...S.fuels].sort((a,b)=>a.date.localeCompare(b.date)||a.odo-b.odo).pop();
+  return f?{v:f.t/f.l,real:true}:{v:S.cfg.price||5.72,real:false};
+}
+function costs(){
+  const c=consumoAtual(),p=precoAtual(),fuel=p.v/c.v;
+  const items=S.maint.filter(m=>m.cost>0&&m.interval>0).map(m=>({name:m.name,perKm:m.cost/m.interval}));
+  const maint=items.reduce((a,x)=>a+x.perKm,0);
+  return {fuel,maint,items,total:fuel+maint,kml:c,price:p};
+}
+function liveRide(){
+  const kb=num($("rKmB").value)||0,kc=num($("rKmC").value)||0,g=num($("rGain").value)||0,km=kb+kc;
+  if(!km){$("rLive").innerHTML="";return}
+  const ck=costs().total,custo=km*ck;
+  $("rLive").innerHTML=`Total: <b>${n1(km)} km</b>${g?` · Ganho/km: <b>${brl(g/km)}</b>`:""}<br>Custo estimado: ${brl(custo)} (${brl(ck)}/km)${g?` · Lucro estimado: <b class="${g-custo>=0?"pos":"neg"}">${brl(g-custo)}</b>`:""}`;
+}
+function cancelRide(){edR=null;$("rKmB").value="";$("rKmC").value="";$("rGain").value="";$("rLive").innerHTML="";$("rDate").value=today();
+  $("rDate").style.display="none";$("rHora").style.display="none";$("rHoraLbl").style.display="none";$("rHora").value="";rDataTxt();
+  $("rBtn").textContent="Salvar corrida";$("rCancel").style.display="none";$("rTitle").textContent="Nova corrida"}
+// Registro rapido: tipo em botoes (lembra o ultimo usado), data = hoje, aviso ao salvar
+let toastT=null;
+function toast(m){const e=$("toast");e.textContent=m;e.style.display="block";clearTimeout(toastT);toastT=setTimeout(()=>e.style.display="none",2200)}
+function setCat(k){$("rCat").value=k;try{localStorage.setItem("motoextra.cat",k)}catch(e){}renderChips()}
+function renderChips(){const cur=$("rCat").value;
+  $("rChips").innerHTML=CATS_NOVAS.map(k=>`<button type="button" class="${k===cur?"on":""}" onclick="setCat('${k}')">${CATS[k]}</button>`).join("")}
+function rDataTxt(){const d=$("rDate").value||today();$("rDateTxt").textContent=d===today()?"Hoje":fdate(d)}
+const agora=()=>new Date().toTimeString().slice(0,5);
+function mostraData(pick){["rDate","rHora","rHoraLbl"].forEach(i=>$(i).style.display="block");
+  if(pick){try{$("rDate").showPicker&&$("rDate").showPicker()}catch(e){}}}
+function ultimaCorrida(){let u=null;S.rides.forEach(r=>{if(!u||r.date>=u.date)u=r});return u}
+function repetirRide(id){const r=S.rides.find(x=>x.id===id);if(!r)return;
+  cancelRide();setCat(CATS_NOVAS.includes(r.cat)?r.cat:$("rCat").value);
+  $("rKmB").value=r.kmB||"";$("rKmC").value=r.kmC!=null?r.kmC:r.km;$("rGain").value=r.gain||"";liveRide();
+  goTab("corrida");scrollTo(0,0);toast("🔁 Dados copiados. Ajuste se precisar e toque em Salvar")}
+function repetirUltima(){const u=ultimaCorrida();if(u)repetirRide(u.id)}
+function renderHoje(){
+  const u=ultimaCorrida(),b=$("rRep");
+  b.style.display=u&&edR==null?"block":"none";
+  if(u)b.textContent=`🔁 Repetir última: ${CATS[u.cat]||u.cat} · ${n1(u.km)} km${u.gain?" · "+brl(u.gain):""}`;const t=today(),rd=S.rides.filter(r=>r.date===t);
+  $("rHoje").textContent=rd.length?`Hoje: ${rd.length} corrida(s) · ${n1(rd.reduce((a,r)=>a+r.km,0))} km · ${brl(rd.reduce((a,r)=>a+r.gain,0))}`:"Hoje ainda sem corridas."}
+function editExp(id){const e=S.exps.find(x=>x.id===id);if(!e)return;edE=id;
+  if(![...$("eCat").options].some(o=>o.value===e.cat))$("eCat").add(new Option(e.cat,e.cat));
+  $("eCat").value=e.cat;$("eVal").value=e.val;$("eNote").value=e.note||"";$("eDate").value=e.date;$("eConta").value=(movRef("e"+id)||{}).conta||"";
+  $("eBtn").textContent="Salvar alteração";$("eCancel").style.display="block";$("eTitle").textContent="Editar gasto";goTab("gastos");scrollTo(0,0)}
+function cancelExp(){edE=null;$("eVal").value="";$("eNote").value="";$("eDate").value=today();
+  $("eBtn").textContent="Salvar";$("eCancel").style.display="none";$("eTitle").textContent="Novo gasto"}
+function addExp(){
+  const v=num($("eVal").value);if(!(v>0))return alert("Informe o valor.");
+  if(edE!=null){const e=S.exps.find(x=>x.id===edE);
+    if(e){Object.assign(e,{date:$("eDate").value||today(),cat:$("eCat").value,val:v,note:$("eNote").value});
+      syncMov("e"+e.id,$("eConta").value,v,$("eCat").value+($("eNote").value?" · "+$("eNote").value:""),e.date)}
+    save();cancelExp();return render()}
+  const eid=uid(),edt=$("eDate").value||today();
+  S.exps.push({id:eid,date:edt,cat:$("eCat").value,val:v,note:$("eNote").value});
+  syncMov("e"+eid,$("eConta").value,v,$("eCat").value+($("eNote").value?" · "+$("eNote").value:""),edt);
+  save();$("eVal").value="";$("eNote").value="";render();
+}
+function del(list,id){if(!confirm("Apagar este registro?"))return;
+  const it=S[list].find(x=>x.id===id);
+  if(list==="rides"&&it)S.odo=Math.max(0,S.odo-it.km);
+  S[list]=S[list].filter(x=>x.id!==id);if(list==="exps")delMovRef("e"+id);if(list==="fuels")delMovRef("f"+id);save();render()}
+function addMaint(){
+  const name=prompt("Nome do item (ex: Kit relação):");if(!name)return;
+  const iv=num(prompt("A cada quantos km?","5000"));if(!(iv>0))return;
+  const w=num(prompt("Me lembrar com quantos km rodados?",Math.round(iv*.9)));
+  const c=num(prompt("Quanto custa cada serviço/peça (R$)? Entra no custo por km.","0"));
+  S.maint.push({id:uid(),name,interval:iv,warn:w>0?w:Math.round(iv*.9),cost:c>0?c:0,last:S.odo});save();render();
+}
+function doneMaint(id){const m=S.maint.find(x=>x.id===id);
+  const v=prompt("Feito em qual km?",S.odo??"");if(v===null)return;const n=num(v);if(isNaN(n))return;
+  const p=prompt("Quanto pagou (R$)? 0 = não lançar como gasto",m.cost||0);
+  const c=num(p);if(c>0){m.cost=c;S.exps.push({id:uid(),date:today(),cat:"Manutenção",val:c,note:m.name})}
+  m.last=n;m.date=today();save();render()}
+function setKml(){const v=prompt("Consumo da moto (km por litro):",S.cfg.kml||40);if(v===null)return;const n=num(v);if(n>0){S.cfg.kml=n;save();render()}}
+function setPreco(){const v=prompt("Preço do litro (R$) — usado até você lançar um abastecimento:",S.cfg.price||"");if(v===null)return;const n=num(v);if(n>0){S.cfg.price=n;save();render()}}
+function toggleAuto(){S.cfg.auto=!S.cfg.auto;save();render()}
+function editMaint(id){const m=S.maint.find(x=>x.id===id);
+  const v=prompt("Vence a cada quantos km? (0 = apagar item)",m.interval);if(v===null)return;const n=num(v);
+  if(n===0){S.maint=S.maint.filter(x=>x.id!==id);save();return render()}
+  if(n>0)m.interval=n;
+  const w=num(prompt("Me lembrar com quantos km rodados?",m.warn));
+  if(w>0)m.warn=w;
+  const c=num(prompt("Quanto custa cada serviço/peça (R$)? Entra no custo por km.",m.cost||0));
+  if(!isNaN(c)&&c>=0)m.cost=c;save();render()}
+
+// Consumo: entre abastecimentos consecutivos, km rodados / litros do abastecimento mais novo
+function consumos(){
+  const f=[...S.fuels].sort((a,b)=>a.odo-b.odo),r=[];
+  for(let i=1;i<f.length;i++){const d=f[i].odo-f[i-1].odo;if(d>0)r.push({...f[i],km:d,kml:d/f[i].l,cpk:f[i].t/d})}
+  return r;
+}
+
+const FOOD=["Café da manhã","Almoço","Janta"],MANUT=["Manutenção","Peças","Óleo"];
+function renderGanhos(){
+  const p=$("gPer").value,inP=d=>inPer(d,p);
+  const rd=S.rides.filter(r=>inP(r.date)),fu=S.fuels.filter(f=>inP(f.date)),ex=S.exps.filter(e=>inP(e.date)),pg=S.paid.filter(x=>inP(x.date));
+  const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0),ofCat=cs=>sum(ex.filter(e=>cs.includes(e.cat)),e=>e.val);
+  const bruto=sum(rd,r=>r.gain),comb=sum(fu,f=>f.t),man=ofCat(MANUT),ali=ofCat(FOOD),ctm=ofCat(["Contas da moto"]);
+  const tax=ofCat(TAXA_CATS),outros=sum(ex,e=>e.val)-man-ali-ctm-tax,oper=bruto-comb-man-ali-outros-tax,contas=ctm+sum(pg,x=>x.val),final=oper-contas;
+  const km=sum(rd,r=>r.km),prov=km*costs().maint,dias=new Set(rd.filter(r=>r.gain>0).map(r=>r.date)).size;
+  const L=(t,v,o={})=>`<div class="row" style="${o.b?"font-weight:700;":""}${o.top?"border-top:2px solid #475569;":""}"><span>${t}</span><span class="${o.c||""}">${o.neg&&v?"− ":""}${brl(v)}</span></div>`;
+  const cl=v=>v>=0?"pos":"neg";
+  $("gBox").innerHTML=L("Ganhos brutos",bruto,{b:1,c:"pos"})+L("Combustível",comb,{neg:1})+L("Manutenção e peças",man,{neg:1})+L("Alimentação",ali,{neg:1})+L("Taxas das plataformas",tax,{neg:1})+L("Outros gastos",outros,{neg:1})
+    +L("Lucro da moto",oper,{b:1,top:1,c:cl(oper)})+L("Contas pagas",contas,{neg:1})+L("💰 LUCRO FINAL",final,{b:1,top:1,c:cl(final)})
+    +`<div class="hint">Lucro final = o que sobrou no bolso depois dos gastos e das contas pagas.<br>Considerando o desgaste da moto (provisão de manutenção de ${brl(prov)} nos ${n1(km)} km rodados): <b class="${cl(final-prov)}">${brl(final-prov)}</b></div>
+    <div class="grid" style="margin-top:10px">${dias?`<div class="stat"><b>${brl(bruto/dias)}</b><span>Ganho médio por dia trabalhado (${dias} dia${dias>1?"s":""})</span></div><div class="stat"><b>${brl(oper/dias)}</b><span>Lucro da moto por dia</span></div>`:""}${km?`<div class="stat"><b>${brl(bruto/km)}</b><span>Ganho por km</span></div><div class="stat"><b>${n1(bruto?oper/bruto*100:0)}%</b><span>do ganho vira lucro</span></div>`:""}</div>`;
+  const by={};rd.forEach(r=>{const o=by[r.cat]||(by[r.cat]={km:0,g:0,n:0});o.km+=r.km;o.g+=r.gain;o.n++});
+  const pk=Object.keys(by).sort((a,b)=>by[b].g-by[a].g);
+  $("gPlat").innerHTML=pk.map(k=>{const o=by[k],pc=bruto?o.g/bruto*100:0;
+    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CATS[k]}</span><b>${brl(o.g)}</b></div><div class="bar"><i style="width:${pc}%;background:var(--ac)"></i></div><small style="color:var(--mut)">${o.n} corrida(s) · ${n1(o.km)} km · ${o.km?brl(o.g/o.km)+"/km":"-"} · ${n1(pc)}% do total</small></div>`}).join("")||'<div class="hint">Nenhuma corrida no período.</div>';
+  renderHora(rd,costs().total,p);renderTurnos();renderJornada();
+  const dc=k=>{const g=sum(S.rides.filter(r=>r.date===k),r=>r.gain),c=sum(S.fuels.filter(f=>f.date===k),f=>f.t)+sum(S.exps.filter(e=>e.date===k&&e.cat!=="Contas da moto"),e=>e.val);return{g,c,l:g-c}};
+  const ds=[];for(let i=13;i>=0;i--)ds.push(dkey(Date.now()-i*864e5));
+  $("gChart").innerHTML=barsSvg(ds.map(d=>{const x=dc(d);return [x.g,x.l]}),ds.map(d=>d.slice(8)),0,["#f97316","#22c55e"]);
+  const all=[...new Set([...rd.map(r=>r.date),...fu.map(f=>f.date),...ex.map(e=>e.date)])].sort().reverse().slice(0,31);
+  $("gDias").innerHTML=all.map(k=>{const x=dc(k);return `<div class="row"><div>${fdate(k)}<small>ganho ${brl(x.g)} · gastos ${brl(x.c)}</small></div><b class="${cl(x.l)}">${brl(x.l)}</b></div>`}).join("")||'<div class="hint">Sem movimento no período.</div>';
+}
+// Melhor horario: ganho por hora ativa (cada hora do relogio em que houve pelo menos uma corrida conta como 1 hora trabalhada)
+const FAIXAS=[[0,6,"0–6h"],[6,9,"6–9h"],[9,12,"9–12h"],[12,15,"12–15h"],[15,18,"15–18h"],[18,21,"18–21h"],[21,24,"21–24h"]];
+const DSEM=["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+const hm=t=>{const [h,m]=String(t||"").split(":").map(Number);return h*60+(m||0)};
+let tuSel=[];
+function tuDia(w){tuSel=tuSel.includes(w)?tuSel.filter(x=>x!==w):[...tuSel,w];renderTurnos()}
+function tuSalvar(){const ini=$("tuIni").value,fim=$("tuFim").value;
+  if(!tuSel.length)return alert("Escolha pelo menos um dia.");
+  if(!ini||!fim||ini===fim)return alert("Informe o horário de início e de fim.");
+  S.turnos.push({id:uid(),dias:[...tuSel].sort(),ini,fim});tuSel=[];$("tuIni").value=$("tuFim").value="";save();render()}
+function tuDel(id){if(confirm("Apagar este turno?")){S.turnos=S.turnos.filter(t=>t.id!==id);save();render()}}
+const tuDiasTxt=d=>d.length===7?"Todos os dias":d.length>2&&d.every((x,i)=>!i||x===d[i-1]+1)?DSEM[d[0]]+" a "+DSEM[d[d.length-1]]:d.map(x=>DSEM[x]).join(", ");
+function renderTurnos(){
+  $("tuDias").innerHTML=DSEM.map((d,w)=>`<button type="button" class="chip${tuSel.includes(w)?" on":""}" onclick="tuDia(${w})">${d}</button>`).join("");
+  $("tuList").innerHTML=S.turnos.map(t=>`<div class="row"><div>${tuDiasTxt(t.dias)}<small>${t.ini} às ${t.fim}${hm(t.fim)<=hm(t.ini)?" (do dia seguinte)":""}</small></div><button class="del" onclick="tuDel(${t.id})">✕</button></div>`).join("");
+  if(!S.turnos.length&&!$("tuBox").dataset.ab){$("tuBox").open=true;$("tuBox").dataset.ab=1}
+}
+// Jornada: inicio e fim reais de cada periodo rodando no dia (as corridas costumam ser lancadas so no fim)
+const jDur=j=>{const d=hm(j.fim)-hm(j.ini);return d>0?d:d+1440};
+const hTxt=m=>{const h=Math.floor(m/60),r=Math.round(m%60);return h+"h"+(r?String(r).padStart(2,"0"):"")};
+function jSalvar(){const date=$("jDate").value||today(),ini=$("jIni").value,fim=$("jFim").value;
+  if(!ini||!fim||ini===fim)return alert("Informe a hora em que começou e a hora em que terminou.");
+  S.jornadas.push({id:uid(),date,ini,fim});$("jIni").value=$("jFim").value="";save();render();
+  toast(`✔ Jornada salva · ${ini} às ${fim} (${hTxt(jDur({ini,fim}))})`)}
+function jDel(id){if(confirm("Apagar esta jornada?")){S.jornadas=S.jornadas.filter(j=>j.id!==id);save();render()}}
+function jTurno(i,f){$("jIni").value=i;$("jFim").value=f}
+function jAgora(c){$(c).value=agora()}
+function renderJornada(){
+  if(!$("jDate").value)$("jDate").value=today();
+  const d=$("jDate").value,w=(new Date(d+"T12:00:00").getDay()+6)%7,js=S.jornadas.filter(j=>j.date===d).sort((a,b)=>a.ini.localeCompare(b.ini));
+  const tus=S.turnos.filter(t=>t.dias.includes(w));
+  $("jTurnos").innerHTML=tus.length?`<div class="hint" style="margin:6px 0 4px">Preencher com o seu turno de ${DSEM[w]}:</div><div class="chips">${tus.map(t=>`<button type="button" onclick="jTurno('${t.ini}','${t.fim}')">${t.ini}–${t.fim}</button>`).join("")}</div>`:"";
+  $("jList").innerHTML=js.map(j=>`<div class="row"><div>${j.ini} às ${j.fim}${hm(j.fim)<=hm(j.ini)?" (do dia seguinte)":""}<small>${hTxt(jDur(j))} rodando</small></div><button class="del" onclick="jDel(${j.id})">✕</button></div>`).join("")||`<div class="hint">Nenhuma jornada registrada em ${d===today()?"hoje":fdate(d)}.</div>`;
+}
+function turnosHtml(us,poucos){ // cada turno em cada dia da semana: ganho dividido pelas horas realmente trabalhadas nele
+  const sl=turnoSlots().map(z=>({...z,g:0,l:0,n:0,min:0,d:new Set()})),fora={g:0,l:0,n:0,min:0,d:new Set()};
+  us.forEach(u=>{let x=u.slot!=null?sl[u.slot]:null;
+    if(!x&&u.tipo==="jornada"){let best=0;sl.forEach(z=>{const ov=ovl(u.a,u.dur,u.w,z);if(ov>best){best=ov;x=z}})}
+    const o=x||fora;o.g+=u.g;o.l+=u.l;o.n+=u.n;o.min+=u.dur;o.d.add(u.date)});
+  const ok=sl.filter(z=>z.min&&(z.n||z.d.size)),phT=z=>z.g/(z.min/60),plT=z=>z.l/(z.min/60);
+  ok.sort((a,b)=>phT(b)-phT(a));
+  const mx=Math.max(...ok.map(phT),1);
+  let o=ok.length?ok.map((z,i)=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${i===0?"🏆 ":""}<b>${DSEM[z.w]}</b> ${z.ini}–${z.fim}</span><b>${brl(phT(z))}/h</b></div><div class="bar"><i style="width:${phT(z)/mx*100}%;background:${i===0?"var(--ok)":"var(--ac)"}"></i></div><small style="color:var(--mut)">${z.d.size} dia(s) · ${z.n} corrida(s) · ${hTxt(z.min)} trabalhadas · ${brl(z.g/z.d.size)} por dia · lucro ${brl(plT(z))}/h${z.d.size<2?" · poucos dados":""}</small></div>`).join(""):'<div class="hint">Nenhuma corrida dentro dos seus turnos neste período.</div>';
+  if(fora.n)o+=`<div class="hint">Fora dos turnos: ${fora.n} corrida(s) · ${brl(fora.g)} em ${hTxt(fora.min)} (${brl(fora.g/(fora.min/60))}/h)</div>`;
+  const nt=sl.filter(z=>!z.min).length;if(nt)o+=`<div class="hint">${nt} turno(s) sem corrida no período.</div>`;
+  return {html:o,best:ok[0]?{t:`${DSEM[ok[0].w]} ${ok[0].ini}–${ok[0].fim}`,v:phT(ok[0])}:null};
+}
+// turnos cadastrados abertos por dia da semana; turno que passa da meia-noite (ex.: 18:00 as 03:00) termina no dia seguinte
+const turnoSlots=()=>{const sl=[];S.turnos.forEach(t=>{const a=hm(t.ini),b=hm(t.fim),dur=(b>a?0:1440)+b-a;t.dias.forEach(w=>sl.push({w,ini:t.ini,fim:t.fim,a,dur}))});return sl};
+// minutos em comum entre um bloco (inicio a no dia da semana w) e um turno, considerando o turno do dia anterior que vira a noite
+const ovl=(a,dur,w,z)=>{let t=0;[[0,z.w===w],[-1440,z.w===(w+6)%7]].forEach(([off,ok])=>{if(ok)t+=Math.max(0,Math.min(a+dur,z.a+off+z.dur)-Math.max(a,z.a+off))});return t};
+// Blocos de tempo trabalhado: jornadas registradas; sem jornada, o turno em que a corrida caiu; senao, a hora do relogio em que foi lancada
+function blocos(rd,p,ckNow){
+  const wd=d=>(new Date(d+"T12:00:00").getDay()+6)%7,mkU=(date,a,dur,tipo,slot)=>({date,w:wd(date),a,dur,tipo,slot,g:0,l:0,n:0});
+  const addR=(u,r)=>{u.g+=r.gain;u.l+=r.gain-r.km*(r.ck??ckNow);u.n++};
+  const js=S.jornadas.filter(j=>inPer(j.date,p)||inPer(addDays(j.date,1),p)),us=js.map(j=>({...mkU(j.date,hm(j.ini),jDur(j),"jornada"),j}));
+  const resto=[];
+  rd.filter(r=>r.gain>0).forEach(r=>{const m=/^\d\d:/.test(r.hora||"")?hm(r.hora):null;
+    const cs=us.filter(u=>u.date===r.date||(u.date===addDays(r.date,-1)&&u.a+u.dur>1440));
+    if(!cs.length)return m!=null&&resto.push([r,m]);
+    const ab=u=>u.date===r.date?(m??0):(m??0)+1440; // minuto da corrida contado a partir do dia da jornada
+    const ante=cs.filter(u=>u.a<=ab(u)).sort((x,y)=>y.a-x.a)[0]||cs.sort((x,y)=>x.a-y.a)[0];addR(ante,r)});
+  const sl=turnoSlots(),grp={};
+  resto.forEach(([r,m])=>{const w=wd(r.date);let k,a,dur,date=r.date,slot;
+    const i=sl.findIndex(z=>ovl(m,1,w,z));
+    if(i>=0){const z=sl[i];if(z.w!==w)date=addDays(r.date,-1);k=date+"|t"+i;a=z.a;dur=z.dur;slot=i}
+    else{const h=Math.floor(m/60);k=date+"|h"+h;a=h*60;dur=60}
+    addR(grp[k]||(grp[k]=mkU(date,a,dur,slot!=null?"turno":"hora",slot)),r)});
+  return us.concat(Object.values(grp));
+}
+function renderHora(rd,ckNow,p){
+  const us=blocos(rd,p,ckNow),nr=us.reduce((s,u)=>s+u.n,0);
+  if(nr<5){$("gHora").innerHTML='<div class="hint">Registre pelo menos 5 corridas neste período (com a jornada do dia ou com horário) para ver em que horas e dias você ganha mais. Dica: escolha "Tudo" no período para usar todo o histórico.</div>';return}
+  const mk=()=>({g:0,l:0,n:0,min:0,d:new Set()});
+  const hs=[...Array(24)].map(mk),ws=[...Array(7)].map(mk),cel=[...Array(7)].map(()=>FAIXAS.map(mk));
+  const sp=(o,u,ov)=>{const f=ov/u.dur;o.g+=u.g*f;o.l+=u.l*f;o.n+=u.n*f;o.min+=ov;o.d.add(u.date)};
+  const ovH=(u,a,b)=>[0,1440].reduce((s,k)=>s+Math.max(0,Math.min(u.a+u.dur,b+k)-Math.max(u.a,a+k)),0); // bloco que passa da meia-noite volta para 0h
+  us.forEach(u=>{for(let h=0;h<24;h++){const ov=ovH(u,h*60,h*60+60);if(ov)sp(hs[h],u,ov)}
+    FAIXAS.forEach((f,j)=>{const ov=ovH(u,f[0]*60,f[1]*60);if(ov)sp(cel[u.w][j],u,ov)});
+    sp(ws[u.w],u,u.dur)});
+  const ph=o=>o.min?o.g/(o.min/60):0,poucos=o=>o.min<180; // menos de 3 horas trabalhadas: amostra pequena
+  // grafico: so o intervalo de horas em que houve trabalho
+  const used=hs.map((o,i)=>o.min?i:-1).filter(i=>i>=0),h0=used[0],h1=used[used.length-1],idx=[];for(let i=h0;i<=h1;i++)idx.push(i);
+  const conf=idx.filter(i=>!poucos(hs[i])),top=[...(conf.length?conf:idx)].sort((a,b)=>ph(hs[b])-ph(hs[a])).slice(0,3);
+  const fx=FAIXAS.map((f,j)=>{const o=mk();ws.forEach((_,w)=>{const c=cel[w][j];o.g+=c.g;o.min+=c.min;o.n+=c.n});return o});
+  const bf=fx.map((o,j)=>j).filter(j=>fx[j].min&&!poucos(fx[j])).sort((a,b)=>ph(fx[b])-ph(fx[a]))[0];
+  const bw=ws.map((o,w)=>w).filter(w=>ws[w].d.size).sort((a,b)=>ws[b].g/ws[b].d.size-ws[a].g/ws[a].d.size)[0];
+  const tu=S.turnos.length?turnosHtml(us,poucos):null,nj=us.filter(u=>u.tipo==="jornada").length;
+  let o=`<div class="grid">${tu?(tu.best?`<div class="stat"><b style="font-size:16px">${tu.best.t}</b><span>Turno que mais rende: ${brl(tu.best.v)} por hora</span></div>`:""):bf!=null?`<div class="stat"><b>${FAIXAS[bf][2]}</b><span>Faixa que mais rende: ${brl(ph(fx[bf]))} por hora</span></div>`:""}${bw!=null?`<div class="stat"><b>${DSEM[bw]}</b><span>Melhor dia: ${brl(ws[bw].g/ws[bw].d.size)} por dia trabalhado</span></div>`:""}</div>`;
+  o+=`<div style="margin-top:12px">${barsSvg(idx.map(i=>[ph(hs[i])]),idx.map(i=>idx.length<=12||i%3===0?i+"h":""),0,["#f97316"])}</div>`;
+  o+=`<div class="hint">Ganho por hora trabalhada em cada hora do dia. Mais rentáveis: <b>${top.map(i=>`${i}h (${brl(ph(hs[i]))})`).join(", ")}</b>.</div>`;
+  if(tu)o+=`<h2 style="margin-top:14px">Seus turnos, do melhor para o pior</h2>${tu.html}`;
+  // mapa dia da semana x faixa (quando nao ha turnos cadastrados)
+  else{const mx=Math.max(...cel.flat().map(ph),1),cor=v=>`rgba(249,115,22,${(.15+.85*v/mx).toFixed(2)})`;
+  o+=`<div style="overflow-x:auto;margin-top:12px"><table style="width:100%;border-collapse:separate;border-spacing:3px;font-size:11px;text-align:center"><tr><td></td>${FAIXAS.map(f=>`<td style="color:var(--mut)">${f[2]}</td>`).join("")}</tr>`+
+    cel.map((row,w)=>`<tr><td style="color:var(--mut);text-align:left">${DSEM[w]}</td>${row.map(c=>c.min?`<td title="${Math.round(c.n)} corrida(s) em ${hTxt(c.min)}" style="background:${cor(ph(c))};border-radius:6px;padding:6px 2px;${poucos(c)?"opacity:.55;":""}font-weight:600">${Math.round(ph(c))}</td>`:`<td style="background:var(--card2);border-radius:6px;padding:6px 2px;color:var(--mut)">·</td>`).join("")}</tr>`).join("")+`</table></div>`;
+  o+=`<div class="hint">R$ por hora em cada dia e faixa. Quanto mais laranja, melhor. Quadros apagados têm poucos dados (menos de 3 horas). Cadastre os seus turnos abaixo para comparar os seus horários.</div>`}
+  o+=`<div style="margin-top:8px">${ws.map((x,w)=>x.min?`<div class="row"><div>${DSEM[w]}<small>${x.d.size} dia(s) · ${Math.round(x.n)} corrida(s) · ${hTxt(x.min)} trabalhadas</small></div><div style="text-align:right"><b>${brl(ph(x))}/h</b><small>lucro ${brl(x.l/(x.min/60))}/h</small></div></div>`:"").join("")}</div>`;
+  o+=`<div class="hint">Horas trabalhadas: ${nj?`as jornadas que você registrou na aba Corridas (${nj} no período). Nos dias sem jornada, `:"registre a jornada do dia na aba Corridas para usar o horário real. Sem jornada, conta "}${S.turnos.length?"a duração do turno em que a corrida caiu ou ":""}cada hora do relógio em que você lançou corrida. O lucro desconta combustível e manutenção pelos km da corrida.</div>`;
+  $("gHora").innerHTML=o;
+}
+// Perfil: foto reduzida (256px) e guardada junto com os dados (sincroniza pela nuvem)
+function renderPerfil(){
+  const p=S.profile||{},ph=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p.photo||"")?p.photo:"";
+  const ini=(p.name||"").trim().charAt(0).toUpperCase();
+  ["hdrAv","pfAv"].forEach(id=>{const e=$(id);
+    if(ph)e.innerHTML=`<img src="${ph}" alt="" style="width:100%;height:100%;object-fit:cover">`;else e.textContent=ini||"🏍️"});
+  if(document.activeElement!==$("pfName"))$("pfName").value=p.name||"";
+}
+function setNome(){S.profile.name=$("pfName").value.trim();save();render()}
+function delFoto(){if(!S.profile.photo)return;if(confirm("Remover a foto?")){S.profile.photo="";save();render()}}
+function setFoto(el){const f=el.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{const im=new Image();
+    im.onload=()=>{const n=256,c=document.createElement("canvas");c.width=c.height=n;const s=Math.min(im.width,im.height);
+      c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,n,n);
+      S.profile.photo=c.toDataURL("image/jpeg",.82);save();render()};
+    im.onerror=()=>alert("Não consegui ler essa imagem.");im.src=r.result};
+  r.readAsDataURL(f);el.value=""}
+// Fechar o dia: o usuario digita o odometro real do painel; a diferenca para o que o app contou vira "km fora de corrida" (CLT, pessoal)
+function fecharDia(){
+  const l=num($("fcOdo").value);
+  if(!(l>0))return alert("Digite o odômetro da moto (o total que aparece no painel).");
+  ajustaOdo(l,today(),true);
+}
+function ajustaOdo(leitura,date,fecha){
+  const reg=()=>{if(fecha)S.fechou.push({date,odo:leitura})};
+  if(S.odo==null){S.odo=leitura;S.maint.forEach(m=>{if(m.last==null)m.last=leitura});reg();save();render();return toast("✔ Odômetro definido")}
+  const diff=leitura-S.odo;
+  if(!S.fechou.length&&fecha){ // primeira vez: calibra o odometro do app com o da moto
+    if(!confirm(`O odômetro do app (${n1(S.odo)} km) vai passar a ser o da moto (${n1(leitura)} km). Os avisos de manutenção continuam corretos. Confirmar?`))return;
+    S.maint.forEach(m=>{if(m.last!=null)m.last+=diff});S.odo=leitura;reg();save();$("fcOdo").value="";render();return toast("✔ Odômetro calibrado")}
+  if(diff<0){
+    if(!confirm(`A leitura (${n1(leitura)} km) é MENOR que o total do app (${n1(S.odo)} km). Pode haver corrida lançada a mais. Ajustar o odômetro para ${n1(leitura)} km?`))return;
+    S.odo=leitura;reg();save();$("fcOdo").value="";render();return toast("✔ Odômetro ajustado")}
+  if(diff>0.05)S.ext.push({id:uid(),date,km:Math.round(diff*10)/10});
+  S.odo=leitura;reg();save();$("fcOdo").value="";render();
+  toast(diff>0.05?`✔ Dia fechado · ${n1(diff)} km fora de corrida`:"✔ Dia fechado · tudo bate com as corridas");
+}
+function delExt(id){if(!confirm("Remover este registro de km fora de corrida? O odômetro não muda."))return;S.ext=S.ext.filter(e=>e.id!==id);save();render()}
+function renderFecha(){
+  const u=S.fechou[S.fechou.length-1];
+  $("fcInfo").innerHTML=`Odômetro no app agora: <b>${S.odo==null?"-":n1(S.odo)+" km"}</b>`+(u?` · último fechamento: ${fdate(u.date)} (${n1(u.odo)} km)`:" · ainda sem fechamento: o primeiro calibra o odômetro do app com o da moto");
+}
+let histDias=14;
+function histHoje(){$("hDe").value=$("hAte").value=today();histDias=14;render()}
+function histLimpar(){$("hDe").value=$("hAte").value="";histDias=14;render()}
+function maisDias(){histDias+=14;render()}
+function renderHist(ckNow,X){ // corridas e km fora de corrida agrupados por dia, do mais recente ao mais antigo
+  const all=[...S.rides].sort((a,b)=>b.date.localeCompare(a.date)),allExt=S.ext||[],jg={};
+  if(S.jornadas.length)blocos(S.rides,"tudo",ckNow).forEach(u=>{if(u.tipo==="jornada")jg[u.date]=(jg[u.date]||0)+u.g}); // ganho de cada jornada, inclusive corridas lancadas depois da meia-noite
+  const first=[...all.map(r=>r.date),...allExt.map(e=>e.date)].sort()[0]||today();
+  $("hDe").min=$("hAte").min=first;$("hDe").max=$("hAte").max=today();
+  const de=$("hDe").value,ate=$("hAte").value,sum=(a,f)=>a.reduce((s,x)=>s+f(x),0),inF=d=>(!de||d>=de)&&(!ate||d<=ate);
+  const rs=all.filter(r=>inF(r.date)),es=allExt.filter(e=>inF(e.date)),days={},exd={};
+  rs.forEach(r=>(days[r.date]=days[r.date]||[]).push(r));
+  es.forEach(e=>(exd[e.date]=exd[e.date]||[]).push(e));
+  const keys=[...new Set([...Object.keys(days),...Object.keys(exd)])].sort().reverse(),kmT=sum(rs,r=>r.km),gT=sum(rs,r=>r.gain),extT=sum(es,e=>e.km);
+  $("hSum").innerHTML=(all.length||allExt.length)?`Desde <b>${fdate(first)}</b>${de||ate?" · filtro ativo":""} · ${keys.length} dia(s) · ${rs.length} corrida(s) · ${n1(kmT)} km · <b>${brl(gT)}</b>${extT?` · ${n1(extT)} km fora de corrida`:""}`:"Nenhuma corrida registrada ainda.";
+  $("rList").innerHTML=keys.slice(0,histDias).map(k=>{
+    const rr=(days[k]||[]).slice().reverse().sort((a,b)=>(b.hora||"").localeCompare(a.hora||"")),ee=exd[k]||[],g=sum(rr,r=>r.gain),km=sum(rr,r=>r.km),tx=S.exps.filter(e=>e.date===k&&TAXA_CATS.includes(e.cat)),lu=sum(rr,r=>r.gain-r.km*(r.ck??ckNow))-sum(tx,e=>e.val),ek=sum(ee,e=>e.km);
+    const wd=new Date(k+"T12:00:00").toLocaleDateString("pt-BR",{weekday:"long"});
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>${fdate(k)} <span style="color:var(--mut);font-weight:400;font-size:13px">${wd}</span></b><b class="pos">${brl(g)}</b></div>
+      <div class="hint" style="margin:2px 0 6px">${rr.length?`${rr.length} corrida(s) · ${n1(km)} km${km?" · "+brl(g/km)+"/km":""} · lucro estimado <b class="${lu>=0?"pos":"neg"}">${brl(lu)}</b>`:"Nenhuma corrida neste dia"}${(()=>{const js=S.jornadas.filter(j=>j.date===k),mn=js.reduce((s,j)=>s+jDur(j),0);if(js.length)return ` · jornada ${js.map(j=>j.ini+"–"+j.fim).join(" e ")} (${hTxt(mn)}${jg[k]?" · "+brl(jg[k]/(mn/60))+"/h":""})`;
+        const hs=rr.map(r=>r.hora).filter(Boolean).sort();return hs.length?` · das ${hs[0]} às ${hs[hs.length-1]}`:""})()}${ek?` · <b>${n1(km+ek)} km no total</b> (${n1(ek)} fora de corrida)`:""}</div>`+
+      tx.map(t=>{const pl=t.cat.replace("Taxa ",""),gp=sum(rr.filter(r=>platOf(r.cat)===pl),r=>r.gain);
+        return `<div class="hint" style="margin:0 0 6px;color:var(--tx)"><b>${pl}</b>: ganhos ${brl(gp)} − taxa ${brl(t.val)} = <b class="pos">${brl(gp-t.val)}</b> líquido <span style="color:var(--mut)">(valor esperado no saque)</span></div>`}).join("")+
+      rr.map(r=>{const cu=r.km*(r.ck??ckNow),det=r.kmB!=null?`${n1(r.kmB)} busca + ${n1(r.kmC)} corrida = ${n1(r.km)} km`:`${n1(r.km)} km`;
+        return `<div class="row"><div>${CATS[r.cat]||r.cat}<small>${r.hora?"<b>"+r.hora+"</b> · ":""}${det}${r.gain?" · "+brl(r.gain):""}</small>${r.gain&&r.km?`<small>${brl(r.gain/r.km)}/km · custo ${brl(cu)} · lucro <b class="${r.gain-cu>=0?"pos":"neg"}">${brl(r.gain-cu)}</b></small>`:""}</div><div style="display:flex"><button class="del" onclick="repetirRide(${r.id})" title="Repetir esta corrida">🔁</button>${X("rides",r.id)}</div></div>`}).join("")+
+      ee.map(e=>`<div class="row"><div>🏢 Fora de corrida (CLT / pessoal)<small>${n1(e.km)} km</small></div><button class="del" onclick="delExt(${e.id})">✕</button></div>`).join("")+"</div>"}).join("")+
+    (keys.length>histDias?`<button class="sec" onclick="maisDias()">Mostrar mais dias (${keys.length-histDias})</button>`:"")||'<div class="card"><div class="hint">Nenhuma corrida neste período.</div></div>'}
+// Lembretes diarios no topo do app: podem ser ocultados pelo resto do dia
+function lemOcultos(){try{return JSON.parse(localStorage.getItem("motoextra.lem."+today())||"[]")}catch(e){return[]}}
+function ocultaLem(id){try{const l=lemOcultos();l.push(id);localStorage.setItem("motoextra.lem."+today(),JSON.stringify(l))}catch(e){}render()}
+function lembretesHtml(){
+  const t=today(),h=new Date().getHours(),l=[],u=S.fechou[S.fechou.length-1];
+  if(!S.rides.some(r=>r.date===t))l.push({id:"corridas",txt:"Adicione suas corridas diárias",tab:"corrida"});
+  if(h>=18&&(!u||u.date!==t))l.push({id:"balanco",txt:"Não esqueça de registrar seu balanço",tab:"corrida"});
+  if(!S.bills.length)l.push({id:"contas",txt:"Não esqueça de registrar suas contas",tab:"gastos"});
+  const oc=lemOcultos();
+  return l.filter(x=>!oc.includes(x.id)).map(x=>`<div class="card lem"><span onclick="goTab('${x.tab}')">${x.txt}</span><button class="sm sec" onclick="ocultaLem('${x.id}')">Ocultar</button></div>`).join("")}
+// ===== Carteira: contas bancarias, extrato e divisao do saque =====
+let edC=null,sqSig="";
+const r2=v=>Math.round((v||0)*100)/100;
+const contaNome=id=>{const c=S.contas.find(x=>x.id===id);return c?c.name:"(conta apagada)"};
+const saldoConta=id=>{const c=S.contas.find(x=>x.id===id);return r2((c?c.saldo0||0:0)+S.movs.filter(m=>m.conta===id).reduce((a,m)=>a+(m.tipo==="in"?m.val:-m.val),0))};
+const opcoesContas=vazio=>(vazio?`<option value="">${vazio}</option>`:"")+S.contas.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+function fillSel(id,html){const e=$(id),v=e.value;e.innerHTML=html;if(v&&[...e.options].some(o=>o.value===v))e.value=v}
+function syncMov(ref,conta,val,desc,date){ // gasto/abastecimento ligado a uma conta: cria, atualiza ou remove a saida
+  const i=S.movs.findIndex(m=>m.ref===ref);
+  if(!conta){if(i>=0)S.movs.splice(i,1);return}
+  const d={date,conta,tipo:"out",val:r2(val),desc,ref};
+  if(i>=0)Object.assign(S.movs[i],d);else S.movs.push({id:uid(),...d})}
+const movRef=ref=>S.movs.find(m=>m.ref===ref);
+function delMovRef(ref){S.movs=S.movs.filter(m=>m.ref!==ref)}
+
+function cancelConta(){edC=null;["acNome","acSaldo","acPct"].forEach(i=>$(i).value="");$("acFin").value="Lucro";
+  $("acBtn").textContent="Adicionar conta";$("acCancel").style.display="none";$("acTitle").textContent="Cadastrar conta"}
+function editConta(id){const c=S.contas.find(x=>x.id===id);if(!c)return;edC=id;
+  $("acNome").value=c.name;$("acFin").value=c.fin||"Outra";$("acSaldo").value=c.saldo0||"";$("acPct").value=c.pct||"";
+  $("acBtn").textContent="Salvar alteração";$("acCancel").style.display="block";$("acTitle").textContent="Editar conta";scrollTo(0,document.body.scrollHeight)}
+function acSalvar(){
+  const name=$("acNome").value.trim();if(!name)return alert("Informe o nome da conta (ex: Banco do Brasil).");
+  const pct=num($("acPct").value),d={name,fin:$("acFin").value,saldo0:r2(num($("acSaldo").value)||0),pct:pct>0?pct:0};
+  if(edC){const c=S.contas.find(x=>x.id===edC);if(c)Object.assign(c,d);save();cancelConta();return render()}
+  S.contas.push({id:"c"+Date.now().toString(36)+Math.floor(Math.random()*99),...d});save();cancelConta();render()}
+function delConta(id){const c=S.contas.find(x=>x.id===id);if(!c)return;
+  if(!confirm(`Apagar a conta "${c.name}" e todas as movimentações dela? Não dá para desfazer.`))return;
+  S.contas=S.contas.filter(x=>x.id!==id);S.movs=S.movs.filter(m=>m.conta!==id);save();render()}
+
+function mvTipoUI(){const tr=$("mvTipo").value==="tr";$("mvDestWrap").style.display=tr?"block":"none";$("mvLblConta").textContent=tr?"Da conta":"Conta"}
+function mvSalvar(){
+  const tipo=$("mvTipo").value,conta=$("mvConta").value,val=num($("mvVal").value),desc=$("mvDesc").value.trim(),date=$("mvDate").value||today();
+  if(!conta)return alert("Cadastre uma conta primeiro.");
+  if(!(val>0))return alert("Informe o valor.");
+  if(tipo==="tr"){const dest=$("mvDest").value;
+    if(!dest||dest===conta)return alert("Escolha uma conta de destino diferente da origem.");
+    const par="p"+Date.now().toString(36);
+    S.movs.push({id:uid(),date,conta,tipo:"out",val:r2(val),desc:desc||"Transferência para "+contaNome(dest),par},
+                {id:uid(),date,conta:dest,tipo:"in",val:r2(val),desc:desc||"Transferência de "+contaNome(conta),par})}
+  else S.movs.push({id:uid(),date,conta,tipo,val:r2(val),desc});
+  save();$("mvVal").value="";$("mvDesc").value="";render();toast("Movimentação salva")}
+function delMov(id){const m=S.movs.find(x=>x.id===id);if(!m)return;
+  if(!confirm(m.par?"Apagar esta transferência (as duas pontas)?":"Apagar esta movimentação?"))return;
+  S.movs=S.movs.filter(x=>m.par?x.par!==m.par:x.id!==id);save();render()}
+
+// Dividir saque: o valor sacado e repartido entre as contas (percentual sugerido de cada conta ou valores digitados)
+function sqRender(){
+  $("sqParts").innerHTML=S.contas.length?S.contas.map(c=>`<div class="row"><div>${esc(c.name)}<small>${esc(c.fin||"")}${c.pct?" · sugerido "+n1(c.pct)+"%":""}</small></div><input id="sq_${c.id}" type="number" inputmode="decimal" style="width:120px" placeholder="0,00" oninput="sqResto()"></div>`).join(""):'<div class="hint">Cadastre as suas contas mais abaixo para poder dividir o saque.</div>'}
+function sqCalc(){
+  const total=num($("sqVal").value)||0,com=S.contas.filter(c=>c.pct>0);
+  if(com.length){
+    const resto=S.contas.find(c=>c.fin==="Lucro")||S.contas[S.contas.length-1];let usado=0;
+    S.contas.forEach(c=>{if(c.id===resto.id)return;const v=c.pct>0?r2(total*c.pct/100):0;usado+=v;$("sq_"+c.id).value=v||""});
+    $("sq_"+resto.id).value=total?r2(total-usado):""}
+  sqResto()}
+function sqResto(){
+  const total=num($("sqVal").value)||0,soma=r2(S.contas.reduce((a,c)=>a+(num($("sq_"+c.id)?$("sq_"+c.id).value:0)||0),0)),resto=r2(total-soma);
+  $("sqResto").innerHTML=total?`Distribuído: <b>${brl(soma)}</b> · Restante: <b class="${Math.abs(resto)<.01?"pos":resto<0?"neg":""}">${brl(resto)}</b>`:""}
+function sqSalvar(){
+  const total=num($("sqVal").value)||0,date=$("sqDate").value||today(),orig=$("sqOrig").value;
+  if(!S.contas.length)return alert("Cadastre as suas contas primeiro.");
+  if(!(total>0))return alert("Informe o valor sacado.");
+  const partes=S.contas.map(c=>({c,v:r2(num($("sq_"+c.id).value)||0)})).filter(p=>p.v>0),soma=r2(partes.reduce((a,p)=>a+p.v,0));
+  if(!partes.length)return alert("Informe quanto vai para cada conta.");
+  if(soma>total+.009)return alert("A soma das partes ("+brl(soma)+") passa do valor sacado ("+brl(total)+").");
+  if(total-soma>.009&&!confirm(`Sobram ${brl(total-soma)} sem destino. Registrar assim mesmo?`))return;
+  partes.forEach(p=>S.movs.push({id:uid(),date,conta:p.c.id,tipo:"in",val:p.v,desc:`Saque ${orig} · ${p.c.fin||p.c.name}`}));
+  save();$("sqVal").value="";S.contas.forEach(c=>$("sq_"+c.id).value="");sqResto();render();toast("Saque dividido entre "+partes.length+" conta(s)")}
+function sqDica(){ // sugestao: quanto do ganho costuma ir para manutencao e combustivel
+  const c=costs(),rs=S.rides.filter(r=>r.gain>0&&r.km>0),km=rs.reduce((a,r)=>a+r.km,0),g=rs.reduce((a,r)=>a+r.gain,0);
+  if(!km||!g||!(c.maint>0||c.fuel>0))return"";
+  const gk=g/km;return `Sugestão pelos seus números: separe cerca de <b>${n1(c.maint/gk*100)}%</b> do ganho para manutenção e <b>${n1(c.fuel/gk*100)}%</b> para combustível (ganho médio de ${brl(gk)}/km; custo de ${brl(c.maint)}/km de manutenção e ${brl(c.fuel)}/km de combustível).`}
+
+function renderContas(){
+  // listas de contas nos formularios (mantem a escolha atual)
+  fillSel("eConta",opcoesContas("Não lançar na carteira"));fillSel("fConta",opcoesContas("Não lançar na carteira"));
+  fillSel("mvConta",opcoesContas());fillSel("mvDest",opcoesContas());fillSel("exConta",opcoesContas("Todas as contas"));
+  const sig=JSON.stringify(S.contas.map(c=>[c.id,c.name,c.fin,c.pct]));
+  if(sig!==sqSig){sqSig=sig;sqRender()}
+  $("sqDica").innerHTML=sqDica();
+  // saldos
+  const tot=S.contas.reduce((a,c)=>a+saldoConta(c.id),0);
+  $("cSaldos").innerHTML=S.contas.length?S.contas.map(c=>{const s=saldoConta(c.id);
+    return `<div class="row"><div><b>${esc(c.name)}</b><small>${esc(c.fin||"")}${c.pct?" · "+n1(c.pct)+"% do saque":""}</small></div><div style="display:flex;align-items:center;gap:2px"><b class="${s>=0?"pos":"neg"}" style="font-size:17px">${brl(s)}</b><button class="del" onclick="editConta('${c.id}')" title="Editar">✎</button><button class="del" onclick="delConta('${c.id}')">✕</button></div></div>`}).join("")+
+    `<div class="row" style="font-weight:700"><span>Total nas contas</span><span class="${tot>=0?"pos":"neg"}">${brl(tot)}</span></div>`:'<div class="hint">Nenhuma conta ainda. Cadastre no fim desta página (ex.: Banco do Brasil para o lucro, Mercado Pago para manutenção, Nubank para gastos diários).</div>';
+  // extrato
+  const sel=$("exConta").value,c=S.contas.find(x=>x.id===sel);
+  const asc=S.movs.map((m,i)=>({m,i})).filter(x=>!sel||x.m.conta===sel).sort((a,b)=>a.m.date.localeCompare(b.m.date)||a.i-b.i);
+  let run=c?c.saldo0||0:0;
+  const linhas=asc.map(({m})=>{run=r2(run+(m.tipo==="in"?m.val:-m.val));return{m,run}}).reverse();
+  $("exLista").innerHTML=linhas.slice(0,80).map(({m,run})=>`<div class="row"><div>${esc(m.desc||(m.tipo==="in"?"Entrada":"Saída"))}<small>${fdate(m.date)}${sel?"":" · "+esc(contaNome(m.conta))}${sel?" · saldo "+brl(run):""}</small></div><div style="display:flex;align-items:center"><b class="${m.tipo==="in"?"pos":"neg"}">${m.tipo==="in"?"+":"−"} ${brl(m.val)}</b><button class="del" onclick="delMov(${m.id})">✕</button></div></div>`).join("")+
+    (c&&c.saldo0?`<div class="row"><div>Saldo inicial<small>${esc(c.name)}</small></div><b>${brl(c.saldo0)}</b></div>`:"")||'<div class="hint">Nenhuma movimentação.</div>';
+}
+function txSalvar(){const p=$("txPlat").value,v=num($("txVal").value);
+  if(!(v>0))return alert("Informe o valor da taxa diária.");
+  S.cfg.taxaAuto=S.cfg.taxaAuto||{};S.cfg.taxaAuto[p]=Math.round(v*100)/100;save();$("txVal").value="";render();toast("Taxa diária da "+p+" ativada")}
+function txRemover(p){if(S.cfg.taxaAuto)delete S.cfg.taxaAuto[p];save();render()}
+function txHoje(){const p=$("txPlat").value,v=num($("txVal").value)||(S.cfg.taxaAuto||{})[p];
+  if(!(v>0))return alert("Informe o valor da taxa.");
+  S.exps.push({id:uid(),date:today(),cat:"Taxa "+p,val:Math.round(v*100)/100,note:"plano diário"});save();render();toast("Taxa da "+p+" lançada hoje")}
+function renderTaxas(){const t=S.cfg.taxaAuto||{},ks=Object.keys(t).filter(k=>t[k]>0);
+  $("txLista").innerHTML=ks.length?ks.map(k=>`<div class="row"><div>${k}<small>${brl(t[k])} por dia, lançado sozinho na 1ª corrida do dia</small></div><button class="del" onclick="txRemover('${k}')" title="Desativar">✕</button></div>`).join(""):""}
+function renderBikes(){
+  $("bikeList").innerHTML=S.bikes.map(b=>{const cur=b.id===S.cur,det=[b.model,b.year,b.plate].filter(Boolean).join(" · ");
+    return `<div class="row"><div>${esc(b.name)}${cur?" ✅":""}<small>${esc(det||"sem detalhes — toque em ✎ para completar")}</small></div><div style="display:flex;gap:4px;align-items:center">${cur?"":`<button class="sm" onclick="switchBike('${b.id}')">Usar</button>`}<button class="del" onclick="editBike('${b.id}')" title="Editar">✎</button>${S.bikes.length>1&&!cur?`<button class="del" onclick="delBike('${b.id}')">✕</button>`:""}</div></div>`}).join("");
+  $("odoLbl").textContent="Odômetro"+(S.bikes.length>1?" · "+bikeNow().name.slice(0,14):"");
+}
+function renderHelp(){ // primeiros passos: some quando tudo estiver feito ou quando o usuario ocultar
+  const steps=[[S.odo!=null,"Informar o odômetro atual da moto","setOdo()"],
+    [S.rides.length>0,"Registrar a primeira corrida","goTab('corrida')"],
+    [S.fuels.length>0,"Lançar um abastecimento","goTab('abast')"],
+    [S.fechou.length>0,"Fechar o dia com o odômetro real da moto","goTab('corrida')"],
+    [S.contas.length>0,"Cadastrar as suas contas na Carteira","goTab('contas')"],
+    [S.goal>0,"Definir a meta diária de ganho","setGoal()"],
+    [S.maint.some(m=>m.cost>0),"Informar o custo dos itens de manutenção","goTab('manut')"],
+    [!!(S.profile.photo||S.profile.name),"Completar o seu perfil","goTab('perfil')"]];
+  const feitos=steps.filter(s=>s[0]).length,mostrar=!S.help.hide&&feitos<steps.length;
+  $("helpCard").style.display=mostrar?"block":"none";if(!mostrar)return;
+  $("helpBox").innerHTML=`<div class="hint" style="margin:0 0 8px">${feitos} de ${steps.length} passos feitos</div>`+
+    steps.map(s=>`<div class="row" style="cursor:pointer" onclick="${s[2]}"><span>${s[0]?"✅":"⬜"} ${s[1]}</span><span style="color:var(--mut)">›</span></div>`).join("")+
+    `<button class="sec sm" style="margin-top:10px" onclick="S.help.hide=true;save();render()">Ocultar</button>`}
+// Relatorios do periodo (aba Ganhos): planilha CSV e PDF pela impressao do navegador
+function resumoPer(p){
+  const inP=d=>inPer(d,p),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+  const rd=S.rides.filter(r=>inP(r.date)).sort((a,b)=>a.date.localeCompare(b.date)),fu=S.fuels.filter(f=>inP(f.date)).sort((a,b)=>a.date.localeCompare(b.date)),
+    ex=S.exps.filter(e=>inP(e.date)).sort((a,b)=>a.date.localeCompare(b.date)),pg=S.paid.filter(x=>inP(x.date));
+  const ofCat=cs=>sum(ex.filter(e=>cs.includes(e.cat)),e=>e.val);
+  const bruto=sum(rd,r=>r.gain),comb=sum(fu,f=>f.t),man=ofCat(MANUT),ali=ofCat(FOOD),ctm=ofCat(["Contas da moto"]);
+  const tax=ofCat(TAXA_CATS),outros=sum(ex,e=>e.val)-man-ali-ctm-tax,oper=bruto-comb-man-ali-outros-tax,contas=ctm+sum(pg,x=>x.val);
+  return {rd,fu,ex,pg,bruto,comb,man,ali,tax,outros,oper,contas,final:oper-contas,km:sum(rd,r=>r.km),
+    label:{hoje:"Hoje",semana:"Últimos 7 dias",mes:"Este mês",tudo:"Todo o período"}[p]||p}}
+const dec=v=>String(Math.round((v||0)*100)/100).replace(".",",");
+function baixarCSV(){
+  const p=$("gPer").value,r=resumoPer(p),b=bikeNow(),q=v=>{v=String(v??"");if(/^[=+\-@]/.test(v)&&!/^-?\d+(,\d+)?$/.test(v))v="'"+v; /* evita formula em planilha */return /[;"\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=[["MotoExtra — relatório"],["Veículo",b.name+(b.model?" ("+b.model+")":"")],["Período",r.label],["Gerado em",fdate(today())],[],
+    ["RESUMO"],["Ganhos brutos",dec(r.bruto)],["Combustível",dec(r.comb)],["Manutenção e peças",dec(r.man)],["Alimentação",dec(r.ali)],["Taxas das plataformas",dec(r.tax)],["Outros gastos",dec(r.outros)],
+    ["Lucro da moto",dec(r.oper)],["Contas pagas",dec(r.contas)],["Lucro final",dec(r.final)],["Km rodados",dec(r.km)],[],
+    ["CORRIDAS"],["Data","Hora","Tipo","Km até o embarque","Km da corrida","Km total","Valor (R$)"],
+    ...r.rd.map(x=>[fdate(x.date),x.hora||"",CATS[x.cat]||x.cat,x.kmB!=null?dec(x.kmB):"",x.kmC!=null?dec(x.kmC):"",dec(x.km),dec(x.gain)]),[],
+    ["ABASTECIMENTOS"],["Data","Odômetro","Litros","Valor (R$)","R$/litro"],
+    ...r.fu.map(x=>[fdate(x.date),dec(x.odo),dec(x.l),dec(x.t),dec(x.t/x.l)]),[],
+    ["GASTOS"],["Data","Categoria","Descrição","Valor (R$)"],
+    ...r.ex.map(x=>[fdate(x.date),x.cat,x.note||"",dec(x.val)])];
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["﻿"+rows.map(l=>l.map(q).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"}));
+  a.download=`motoextra-relatorio-${p}-${today()}.csv`;a.click()}
+function relatorioPDF(){
+  const p=$("gPer").value,r=resumoPer(p),b=bikeNow(),w=open("","_blank");
+  if(!w)return alert("O navegador bloqueou a janela do relatório. Permita pop-ups para este site e tente de novo.");
+  const L=(t,v,bold)=>`<tr${bold?' class="tot"':""}><td>${t}</td><td class="n">${brl(v)}</td></tr>`;
+  const T=(h,rows)=>`<table><tr>${h.map((x,i)=>`<th${i>=h.length-1?' class="n"':""}>${x}</th>`).join("")}</tr>${rows.map(c=>`<tr>${c.map((x,i)=>`<td${i>=c.length-1?' class="n"':""}>${esc(x)}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${h.length}">Sem registros.</td></tr>`}</table>`;
+  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório MotoExtra</title><style>
+    body{font:13px system-ui,Arial;margin:22px;color:#111}h1{font-size:20px;margin:0}h2{font-size:14px;margin:18px 0 6px}
+    .sub{color:#555;margin:2px 0 10px}table{width:100%;border-collapse:collapse}td,th{padding:4px 6px;border-bottom:1px solid #ddd;text-align:left}
+    .n{text-align:right}.tot td{font-weight:700;border-top:2px solid #111}</style></head><body>
+    <h1>MotoExtra — relatório</h1><div class="sub">${esc(b.name)}${b.model?" · "+esc(b.model):""}${b.plate?" · "+esc(b.plate):""} · ${esc(r.label)} · gerado em ${fdate(today())}</div>
+    <h2>Resumo</h2><table>${L("Ganhos brutos",r.bruto)}${L("− Combustível",r.comb)}${L("− Manutenção e peças",r.man)}${L("− Alimentação",r.ali)}${L("− Taxas das plataformas",r.tax)}${L("− Outros gastos",r.outros)}${L("Lucro da moto",r.oper,1)}${L("− Contas pagas",r.contas)}${L("Lucro final",r.final,1)}</table>
+    <div class="sub">${n1(r.km)} km rodados${r.km?" · ganho de "+brl(r.bruto/r.km)+" por km":""}</div>
+    <h2>Corridas</h2>${T(["Data","Hora","Tipo","Km","Valor"],r.rd.map(x=>[fdate(x.date),x.hora||"",CATS[x.cat]||x.cat,n1(x.km)+" km",brl(x.gain)]))}
+    <h2>Abastecimentos</h2>${T(["Data","Odômetro","Litros","Valor"],r.fu.map(x=>[fdate(x.date),n1(x.odo)+" km",n1(x.l)+" L",brl(x.t)]))}
+    <h2>Gastos</h2>${T(["Data","Categoria","Descrição","Valor"],r.ex.map(x=>[fdate(x.date),x.cat,x.note||"",brl(x.val)]))}
+    </body></html>`);
+  w.document.close();w.focus();setTimeout(()=>w.print(),400)}
+function render(){
+  renderGanhos();renderPerfil();renderBikes();renderHelp();renderHoje();renderFecha();renderContas();renderTaxas();
+  $("odoV").textContent=S.odo==null?"definir":n1(S.odo)+" km";
+  renderCharts();
+  const dl=dueList();
+  $("bList").innerHTML=[...S.bills].sort((a,b)=>a.due.localeCompare(b.due)).map(b=>{const late=b.due<today();
+    return `<div class="row"><div>${b.name} · ${brl(b.val)}<small style="${late?"color:var(--bad)":""}">${late?"VENCIDA · ":""}${fdate(b.due)} · ${b.grp||"Moto"}${b.rec?" · todo mês":""}</small></div>
+    <div style="display:flex;gap:6px;align-items:center"><button class="sm" onclick="payBill(${b.id})">Paguei</button><button class="del" onclick="delBill(${b.id})">✕</button></div></div>`}).join("")||'<div class="hint">Nenhuma conta cadastrada.</div>';
+  // contas x renda do mes
+  {const t=today(),mes=t.slice(0,7),[y,mo,dd]=t.split("-").map(Number),dim=new Date(y,mo,0).getDate(),fim=`${mes}-${String(dim).padStart(2,"0")}`;
+   const sum=a=>a.reduce((s,x)=>s+x,0);
+   const ganho=sum(S.rides.filter(r=>r.date.slice(0,7)===mes).map(r=>r.gain));
+   const gasto=sum(S.fuels.filter(f=>f.date.slice(0,7)===mes).map(f=>f.t))+sum(S.exps.filter(e=>e.date.slice(0,7)===mes&&e.cat!=="Contas da moto").map(e=>e.val));
+   const renda=ganho-gasto;
+   const pago=sum(S.paid.filter(p=>p.date.slice(0,7)===mes).map(p=>p.val))+sum(S.exps.filter(e=>e.date.slice(0,7)===mes&&e.cat==="Contas da moto").map(e=>e.val));
+   const pend=sum(S.bills.filter(b=>b.due<=fim).map(b=>b.val));
+   const sobra=renda-pago-pend,falta=Math.max(0,pend-(renda-pago)),dias=dim-dd+1;
+   const st2=(v,l,c="")=>`<div class="stat"><b class="${c}">${v}</b><span>${l}</span></div>`;
+   $("billsBox").innerHTML=`<div class="grid">${st2(brl(renda),"Renda líquida do mês (ganhos − combustível e gastos)",renda>=0?"pos":"neg")}${st2(brl(pago),"Contas já pagas")}${st2(brl(pend),"Contas ainda a pagar (até fim do mês)")}${st2(brl(sobra),"Sobra depois de pagar tudo",sobra>=0?"pos":"neg")}</div>
+   <div class="hint">${pend===0?"Nenhuma conta pendente neste mês.":falta>0?`Faltam <b>${brl(falta)}</b> de renda para cobrir as contas — cerca de <b>${brl(falta/dias)}</b> líquidos por dia nos ${dias} dia(s) restantes.`:"✅ Sua renda do mês já cobre as contas pendentes."}</div>`;}
+  const bd=billsDue();
+  const dAc=typeof diasAcesso==="function"?diasAcesso():null;
+  $("banner").innerHTML=lembretesHtml()+(dAc!==null&&dAc<=5?`<div class="card" style="border-left:5px solid var(--warn);cursor:pointer" onclick="goTab('manut')">Seu acesso termina em ${Math.max(dAc,0)} dia(s). Toque para renovar.</div>`:"")+bd.map(b=>`<div class="card" style="border-left:5px solid ${b.due<today()?"var(--bad)":"var(--warn)"};cursor:pointer" onclick="goTab('gastos')">Suas contas: ${billMsg(b)}</div>`).join("")+dl.map(x=>`<div class="card" style="border-left:5px solid ${x.rest<0?"var(--bad)":"var(--warn)"};cursor:pointer" onclick="goTab('manut')">Manutenção: ${msgDue(x)}</div>`).join("")+
+    (dl.length&&"Notification"in window&&Notification.permission==="default"?'<button class="sec" style="margin:0 0 12px" onclick="pedirNotif()">Ativar notificações</button>':"");
+  if(dl.length&&!avisouAbertura){avisouAbertura=true;notifica(dl)}
+  // resumo
+  const rd=S.rides.filter(r=>inPer(r.date)),fu=S.fuels.filter(f=>inPer(f.date)),ex=S.exps.filter(e=>inPer(e.date));
+  const km=rd.reduce((a,r)=>a+r.km,0),gain=rd.reduce((a,r)=>a+r.gain,0);
+  const cf=fu.reduce((a,f)=>a+f.t,0),ce=ex.reduce((a,e)=>a+e.val,0),cost=cf+ce,lucro=gain-cost;
+  const st=(v,l,c="")=>`<div class="stat"><b class="${c}">${v}</b><span>${l}</span></div>`;
+  const taxP=ex.filter(e=>TAXA_CATS.includes(e.cat)).reduce((a,e)=>a+e.val,0);
+  $("resGrid").innerHTML=st(n1(km)+" km","Rodados")+st(brl(gain),"Ganhos")+st(brl(cost),"Gastos (comb. + outros)")+
+    st(brl(lucro),"Lucro líquido",lucro>=0?"pos":"neg")+st(km?brl(cost/km):"-","Custo por km")+st(km?brl(gain/km):"-","Ganho por km")+
+    st(brl(gain-taxP-rd.reduce((a,r)=>a+r.km*(r.ck??costs().total),0)),"Lucro estimado (custo/km, inclui manutenção)",gain-taxP-rd.reduce((a,r)=>a+r.km*(r.ck??costs().total),0)>=0?"pos":"neg")+
+    (S.ext.some(e=>inPer(e.date))?st(n1(S.ext.filter(e=>inPer(e.date)).reduce((a,e)=>a+e.km,0))+" km","Fora de corrida (CLT / pessoal)"):"");
+  const by={};rd.forEach(r=>{const o=by[r.cat]||(by[r.cat]={km:0,gain:0});o.km+=r.km;o.gain+=r.gain});
+  const ks=Object.keys(by);
+  $("porTipo").innerHTML=ks.length?ks.map(k=>`<div class="bk"><span>${CATS[k]}</span><span>${n1(by[k].km)} km · ${brl(by[k].gain)}</span></div>`).join(""):'<div class="hint">Nenhuma corrida no período.</div>';
+  {const cat={};if(cf>0)cat["Combustível"]=cf;ex.forEach(e=>cat[e.cat]=(cat[e.cat]||0)+e.val);
+   const ent=Object.entries(cat).sort((a,b)=>b[1]-a[1]),tot=ent.reduce((a,x)=>a+x[1],0);
+   const cores=["#f97316","#ef4444","#eab308","#22c55e","#3b82f6","#a855f7","#ec4899","#14b8a6","#94a3b8"];
+   $("chCat").innerHTML=ent.length?ent.map(([k,v],i)=>{const p=v/tot*100,c=cores[Math.min(i,cores.length-1)];
+     return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${k}</span><span>${brl(v)} · ${n1(p)}%</span></div><div class="bar"><i style="width:${p}%;background:${c}"></i></div></div>`}).join("")+`<div class="hint">Total: <b>${brl(tot)}</b></div>`:'<div class="hint">Nenhum gasto no período.</div>';}
+  const cs=consumos(),csP=cs.filter(c=>inPer(c.date));
+  const tk=cs.reduce((a,c)=>a+c.km,0),tl=cs.reduce((a,c)=>a+c.l,0);
+  const last=cs[cs.length-1];
+  $("fuelGrid").innerHTML=st(tl?n1(tk/tl)+" km/l":"-","Consumo médio (geral)")+st(last?n1(last.kml)+" km/l":"-","Último tanque")+
+    st(brl(cf),"Gasto com combustível")+st(fu.length?brl(cf/fu.reduce((a,f)=>a+f.l,0))+"/L":"-","Preço médio do litro");
+  // alertas
+  const al=S.maint.filter(m=>m.last!=null&&S.odo!=null).map(m=>({m,rest:m.last+m.interval-S.odo})).sort((a,b)=>a.rest-b.rest);
+  $("alertas").innerHTML=al.length?al.slice(0,3).map(({m,rest})=>`<div class="bk"><span>${m.name}</span><span class="${rest<0?'neg':rest<300?'':'pos'}" style="${rest>=0&&rest<300?'color:var(--warn)':''}">${rest<0?"atrasado "+n1(-rest)+" km":"faltam "+n1(rest)+" km"}</span></div>`).join(""):'<div class="hint">Defina o odômetro.</div>';
+  // listas
+  const sorted=k=>[...S[k]].sort((a,b)=>b.date.localeCompare(a.date));
+  const X=(l,id)=>`<button class="del" onclick="${{rides:"editRide",exps:"editExp",fuels:"editFuel"}[l]}(${id})" title="Editar">✎</button><button class="del" onclick="del('${l}',${id})">✕</button>`;
+  const ckNow=costs().total;
+  renderHist(ckNow,X);
+  // custo por km da moto
+  const cs2=costs();
+  $("costBox").innerHTML=`<div class="grid">${st(brl(cs2.total)+"/km","Custo total estimado")}${st(brl(cs2.fuel)+"/km","Combustível")}${st(brl(cs2.maint)+"/km","Manutenção")}${st(n1(cs2.kml.v)+" km/l","Consumo "+(cs2.kml.real?"(medido)":"(padrão)"))}</div>
+    <div class="hint">Litro a ${brl(cs2.price.v)} ${cs2.price.real?"(último abastecimento)":"(estimado — ajuste abaixo)"}.${cs2.items.length?"<br>"+cs2.items.map(x=>`${x.name}: ${brl(x.perKm)}/km`).join(" · "):"<br>Defina o custo dos itens em Manutenção → Editar para incluir manutenção."}</div>
+    <div style="display:flex;gap:8px"><button class="sec sm" style="margin-top:10px" onclick="setKml()">Consumo</button><button class="sec sm" style="margin-top:10px" onclick="setPreco()">Preço do litro</button><button class="sec sm" style="margin-top:10px" onclick="toggleAuto()">Medido: ${S.cfg.auto?"ligado":"desligado"}</button></div>`;
+  const cmap=Object.fromEntries(cs.map(c=>[c.id,c]));
+  $("fList").innerHTML=[...S.fuels].sort((a,b)=>b.odo-a.odo).slice(0,40).map(f=>{const c=cmap[f.id];
+    return `<div class="row"><div>${brl(f.t)} · ${n1(f.l)} L<small>${fdate(f.date)} · ${n1(f.odo)} km · ${brl(f.t/f.l)}/L${c?` · <b>${n1(c.kml)} km/l</b>`:""}</small></div>${X("fuels",f.id)}</div>`}).join("")||'<div class="hint">Vazio.</div>';
+  $("eList").innerHTML=sorted("exps").slice(0,40).map(e=>`<div class="row"><div>${brl(e.val)} · ${e.cat}<small>${fdate(e.date)}${e.note?" · "+e.note:""}</small></div>${X("exps",e.id)}</div>`).join("")||'<div class="hint">Vazio.</div>';
+  // manutenção
+  $("mList").innerHTML=S.maint.map(m=>{
+    if(m.last==null||S.odo==null)return `<div class="row"><div>${m.name}<small>Defina o odômetro</small></div></div>`;
+    const used=S.odo-m.last,pct=Math.min(100,used/m.interval*100),rest=m.interval-used;
+    const col=rest<0?"var(--bad)":used>=m.warn?"var(--warn)":"var(--ok)";
+    return `<div style="padding:10px 0;border-bottom:1px solid #334155"><div style="display:flex;justify-content:space-between"><b>${m.name}</b><span style="color:${col}">${rest<0?"atrasado "+n1(-rest):"faltam "+n1(rest)} km</span></div>
+    <div class="bar"><i style="width:${pct}%;background:${col}"></i></div>
+    <small style="color:var(--mut)">${n1(used)} km rodados desde ${n1(m.last)} km · lembrete aos ${n1(m.warn)} · vence aos ${n1(m.interval)}${m.cost>0?` · ${brl(m.cost)} (${brl(m.cost/m.interval)}/km)`:" · sem custo definido"}</small>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="sm" onclick="doneMaint(${m.id})">Feito</button><button class="sm sec" onclick="editMaint(${m.id})">Editar</button></div></div>`}).join("");
+}
+
+function exportar(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"application/json"}));a.download="motoextra-"+today()+".json";a.click()}
+function importar(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.rides)throw 0;if(confirm("Substituir os dados atuais pelo backup?")){S=d;normalize();save();render()}}catch(e){alert("Arquivo inválido.")}};r.readAsText(f)}
+
+$("rCat").innerHTML=CATS_NOVAS.map(k=>`<option value="${k}">${CATS[k]}</option>`).join("");
+{let c=null;try{c=localStorage.getItem("motoextra.cat")}catch(e){}$("rCat").value=CATS_NOVAS.includes(c)?c:"c99";renderChips()}
+$("eCat").innerHTML=ECATS.map(c=>`<option>${c}</option>`).join("");
+["rDate","fDate","eDate","bDue","mvDate","sqDate"].forEach(i=>$(i).value=today());
+const goTab=t=>document.querySelector(`nav a[data-t=${t}]`).click();
+$("nav").onclick=e=>{const a=e.target.closest("a");if(!a)return;
+  document.querySelectorAll("nav a").forEach(x=>x.classList.toggle("on",x===a));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id==="t-"+a.dataset.t));
+  if(a.dataset.t==="abast"&&S.odo!=null&&!$("fOdo").value)$("fOdo").value=S.odo;scrollTo(0,0);
+  $("hdrT").textContent=a.dataset.t==="resumo"?"MotoExtra":a.textContent.replace(a.firstChild.textContent,"").trim();menu(false)};
+function menu(on){$("nav").classList.toggle("open",on);$("navBg").classList.toggle("open",on)}
+{ // gesto: puxar da esquerda para a direita abre o menu; da direita para a esquerda fecha
+  let x0=null,y0=0;
+  addEventListener("touchstart",e=>{const t=e.touches[0],el=e.target,aberto=$("nav").classList.contains("open");x0=null;
+    if(e.touches.length>1||el.closest("input,select,textarea,table,svg,.chips,[style*='overflow-x']"))return;
+    if(aberto||t.clientX<innerWidth*.4){x0=t.clientX;y0=t.clientY}},{passive:true});
+  addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=Math.abs(t.clientY-y0);x0=null;
+    if(Math.abs(dx)<60||dy>Math.abs(dx)*.6)return;
+    if($("auth").style.display==="block"||$("paywall").style.display==="block")return;
+    menu(dx>0)},{passive:true});
+}
+// ===== Login e nuvem (Supabase) — ativa quando config.js estiver preenchido =====
+let sb=null,user=null,pushTimer=null,dirty=false,acessoAte=null;
+const setSync=t=>{const e=$("syncSt");if(e)e.textContent=t};
+function loadScript(src){return new Promise((ok,err)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=err;document.head.appendChild(s)})}
+function cloudPush(){
+  if(!sb||!user)return;dirty=true;setSync("☁ salvando…");clearTimeout(pushTimer);pushTimer=setTimeout(doPush,1500)}
+async function doPush(){
+  if(!sb||!user||!dirty)return;
+  try{const {error}=await sb.from("app_data").upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});
+    if(error)throw error;dirty=false;setSync("☁ salvo")}
+  catch(e){setSync("☁ sem conexão — salva ao voltar");if(String(e.code)==="42501")checkAccess()}}
+addEventListener("online",()=>{if(dirty)doPush()});
+async function pullCloud(){
+  const {data,error}=await sb.from("app_data").select("data").eq("user_id",user.id).maybeSingle();
+  if(error)throw error;return data&&data.data}
+function showAuth(on){$("auth").style.display=on?"block":"none";$("paywall").style.display="none"}
+function authMsg(t,ok){const e=$("aMsg");e.textContent=t||"";e.style.color=ok?"var(--ok)":"var(--bad)"}
+let modoCad=false;
+function authMode(c){modoCad=c;$("aBtn").textContent=c?"Criar conta":"Entrar";$("aTgl").textContent=c?"Já tenho conta — entrar":"Criar conta nova";
+  $("aTitle").textContent=c?"Criar conta":"Entrar";$("aFgt").style.display=c?"none":"block";authMsg("");
+  $("aPass").autocomplete=c?"new-password":"current-password"}
+async function doAuth(){
+  const email=$("aMail").value.trim(),pass=$("aPass").value;
+  if(!email||pass.length<6)return authMsg("Informe o e-mail e uma senha de pelo menos 6 caracteres.");
+  $("aBtn").disabled=true;authMsg("");
+  try{
+    if(modoCad){const {data,error}=await sb.auth.signUp({email,password:pass,options:{emailRedirectTo:location.origin+location.pathname}});if(error)throw error;
+      if(!data.session){authMode(false);return authMsg("Conta criada! Confirme pelo link enviado ao seu e-mail e depois entre.",true)}}
+    else{const {error}=await sb.auth.signInWithPassword({email,password:pass});if(error)throw error}
+    $("aPass").value="";
+    const {data}=await sb.auth.getSession();await onLogin(data.session.user);
+  }catch(e){const m=String(e.message||e);
+    authMsg(/Invalid login/i.test(m)?"E-mail ou senha incorretos.":/already registered/i.test(m)?"Este e-mail já tem conta. Toque em Entrar.":/confirm/i.test(m)?"Confirme seu e-mail antes de entrar.":/fetch|network/i.test(m)?"Sem conexão com a internet.":m)}
+  $("aBtn").disabled=false}
+async function esqueci(){
+  const email=$("aMail").value.trim();if(!email)return authMsg("Digite seu e-mail acima e toque de novo.");
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  authMsg(error?error.message:"Enviamos um link para redefinir a senha no seu e-mail.",!error)}
+async function sair(){if(!confirm("Sair da conta?"))return;
+  if(dirty)await doPush();await sb.auth.signOut();user=null;localStorage.removeItem("minhamoto.last");location.reload()}
+async function checkAccess(){
+  const {data,error}=await sb.rpc("access_until");if(error)throw error;
+  acessoAte=data?new Date(data):null;return acessoAte&&acessoAte>new Date()}
+// Pagamento: a funcao criar-pagamento (Supabase) cria o checkout no Mercado Pago; a funcao mp-webhook libera o acesso
+async function pagar(){
+  const bs=[$("pwBtn1"),$("accRenova")];bs.forEach(b=>b.disabled=true);
+  try{const {data,error}=await sb.functions.invoke("criar-pagamento");
+    if(error||!data||!data.url)throw error||new Error("sem url");
+    location.href=data.url}
+  catch(e){alert("Não consegui abrir o pagamento agora. Verifique a internet e tente de novo.");bs.forEach(b=>b.disabled=false)}}
+async function esperaPag(){ // voltou do Mercado Pago: espera o webhook liberar o acesso (ate ~30s)
+  $("auth").style.display="none";$("paywall").style.display="block";$("pwInfo").textContent="Confirmando o seu pagamento…";
+  for(let i=0;i<10;i++){try{if(await checkAccess())break}catch(e){}await new Promise(r=>setTimeout(r,3000))}
+  history.replaceState(null,"",location.pathname)}
+const diasAcesso=()=>acessoAte&&acessoAte.getFullYear()<2090?Math.ceil((acessoAte-new Date())/864e5):null;
+function showPaywall(){
+  $("pwPreco").textContent=CFG.precoTexto||"";
+  $("auth").style.display="none";$("paywall").style.display="block";
+  $("pwInfo").textContent=acessoAte&&acessoAte.getFullYear()>2000?"Seu acesso terminou em "+acessoAte.toLocaleDateString("pt-BR")+".":"Seu período de teste terminou."}
+async function recheck(){$("pwBtn2").disabled=true;
+  try{if(await checkAccess()){$("paywall").style.display="none";return onLogin(user,true)}alert("Ainda não identificamos o pagamento. Pode levar alguns minutos.")}
+  catch(e){alert("Sem conexão.")}$("pwBtn2").disabled=false}
+async function onLogin(u,pular){
+  user=u;localStorage.setItem("minhamoto.last",u.id);
+  try{if(!pular&&/[?&](pago|collection_status|payment_id)=/.test(location.search))await esperaPag();
+    if(!pular&&!(await checkAccess()))return showPaywall()}catch(e){/* offline: segue com dados locais */}
+  KEY="minhamoto.u."+u.id;
+  let local=readLocal(KEY);
+  if(!local&&!localStorage.getItem("minhamoto.claimed")){const old=readLocal("minhamoto.v1");if(old){local=old;localStorage.setItem("minhamoto.claimed",u.id)}} // primeiro login: adota os dados que ja estavam no aparelho
+  let remote=null,online=true;
+  try{remote=await pullCloud()}catch(e){online=false}
+  if(remote&&(!local||(remote._u||0)>=(local._u||0)))S=remote;else S=local||def();
+  normalize();localStorage.setItem(KEY,JSON.stringify(S));
+  showAuth(false);
+  if(online&&(!remote||(local&&(local._u||0)>(remote._u||0)))){dirty=true;doPush()}else setSync(online?"☁ salvo":"☁ offline");
+  $("acc").style.display="block";$("accMail").textContent=u.email||"";
+  $("accAte").textContent=acessoAte?"Acesso até "+acessoAte.toLocaleDateString("pt-BR"):"";
+  $("accRenova").style.display=acessoAte&&acessoAte.getFullYear()>=2090?"none":"block";
+  start()}
+async function initAuth(){
+  authMode(false);
+  try{await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js");
+    sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true}})}
+  catch(e){ // sem internet e biblioteca fora do cache: entra offline se ja houve login neste aparelho
+    const last=localStorage.getItem("minhamoto.last");
+    if(last){KEY="minhamoto.u."+last;S=readLocal(KEY)||def();normalize();start();setSync("☁ offline");return}
+    showAuth(true);return authMsg("Sem conexão. Conecte-se à internet para entrar.")}
+  sb.auth.onAuthStateChange(async ev=>{if(ev==="PASSWORD_RECOVERY"){const p=prompt("Digite sua nova senha (mínimo 6 caracteres):");
+    if(p&&p.length>=6){const {error}=await sb.auth.updateUser({password:p});alert(error?error.message:"Senha alterada.")}}});
+  const {data}=await sb.auth.getSession();
+  if(data.session)onLogin(data.session.user);else showAuth(true)}
+function start(){render();if(S.odo==null)setTimeout(setOdo,300)}
+// ---- Horarios da corrida + km pelo trajeto gravado (GPX) ----
+// Voce marca 3 horarios (aceitei / peguei / finalizei). Um app de GPS grava o trajeto em segundo plano;
+// ao importar o arquivo GPX, o app mede os km de cada trecho pelos horarios.
+const MKK="motoextra.marks";
+let M=(()=>{try{return JSON.parse(localStorage.getItem(MKK))||{}}catch(e){return{}}})();
+let TR=[]; // pontos do trajeto importado (so na memoria)
+const mSave=()=>{try{localStorage.setItem(MKK,JSON.stringify(M))}catch(e){}};
+const hhmm=t=>new Date(t).toTimeString().slice(0,5);
+function mkAcao(){
+  if(!M.tA){if(needOdo())return;M={tA:Date.now()};toast("Corrida aceita · "+hhmm(M.tA))}
+  else if(!M.tP){M.tP=Date.now();toast("Passageiro embarcou · "+hhmm(M.tP))}
+  else if(!M.tF){M.tF=Date.now();toast("Corrida finalizada · "+hhmm(M.tF));gpxApply()}
+  else return mkAjustar();
+  mSave();mkUI()}
+function mkAlt(){if(!M.tA){if(needOdo())return;const n=Date.now();M={tA:n,tP:n};mSave();toast("Corrida iniciada · "+hhmm(n));mkUI()}}
+function mkLimpar(){if(confirm("Limpar os horários marcados desta corrida?")){M={};mSave();mkUI()}}
+function mkAjustar(){
+  const nomes=[["tA","aceitou"],["tP","pegou o passageiro"],["tF","finalizou"]];
+  for(const [k,n] of nomes){
+    const v=prompt("Que horas você "+n+"? (HH:MM)",hhmm(M[k]));if(v===null)return;
+    const m=/^(\d{1,2})[:h.](\d{2})$/.exec(v.trim());if(!m)return alert("Horário inválido. Use HH:MM, por exemplo 14:35.");
+    const d=new Date(M[k]);d.setHours(+m[1],+m[2],0,0);M[k]=d.getTime()}
+  if(!(M.tA<=M.tP&&M.tP<=M.tF))return alert("Os horários precisam estar em ordem: aceitou, pegou, finalizou.");
+  mSave();gpxApply();mkUI()}
+function mkUI(){
+  const box=$("gpsTxt");if(!box)return;
+  const l=[];if(M.tA)l.push("Aceitei "+hhmm(M.tA));if(M.tP)l.push(M.tP===M.tA?"já com o passageiro":"Peguei "+hhmm(M.tP));if(M.tF)l.push("Finalizei "+hhmm(M.tF));
+  const kmTxt=$("rKmB").value||$("rKmC").value?` · km medidos: <b>${n1(num($("rKmB").value)||0)} + ${n1(num($("rKmC").value)||0)}</b>`:"";
+  box.innerHTML=!M.tA?"⏱ <b>Horários da corrida</b><br><span style=\"color:var(--mut)\">Toque nos 3 momentos de cada corrida. Os km saem do trajeto gravado pelo GPS do celular.</span>"
+    :"⏱ <b>"+l.join(" · ")+"</b>"+(M.tF?(kmTxt||"<br><span style=\"color:var(--mut)\">Digite o valor e salve. Os km entram quando você importar o trajeto.</span>"):"");
+  $("gpsBtn").textContent=!M.tA?"▶ Aceitei a corrida":!M.tP?"📍 Peguei o passageiro":!M.tF?"🏁 Finalizei a corrida":"✎ Ajustar horários";
+  $("gpsAlt").textContent="Aceitei e já estou com o passageiro";$("gpsAlt").style.display=M.tA?"none":"";
+  $("gpsCan").style.display=M.tA?"":"none"}
+// ---- leitura do GPX e calculo dos km ----
+function gDist(a,b){const R=6371000,r=x=>x*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),
+  h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function gpxPontos(txt){
+  const doc=new DOMParser().parseFromString(txt,"application/xml");
+  if(doc.getElementsByTagName("parsererror").length)return [];
+  const out=[];
+  for(const e of doc.getElementsByTagName("trkpt")){
+    const te=e.getElementsByTagName("time")[0],t=te?Date.parse(te.textContent):NaN,lat=parseFloat(e.getAttribute("lat")),lon=parseFloat(e.getAttribute("lon"));
+    if(isFinite(t)&&isFinite(lat)&&isFinite(lon))out.push({t,lat,lon})}
+  return out}
+// km entre dois horarios; null se o trajeto nao cobre esse intervalo
+function trKm(t1,t2){
+  if(t2<=t1)return 0;
+  const tol=25e3,ps=TR.filter(p=>p.t>=t1-tol&&p.t<=t2+tol);
+  if(ps.length<2||ps[0].t>t1+90e3||ps[ps.length-1].t<t2-90e3)return null;
+  let m=0;
+  for(let i=1;i<ps.length;i++){const a=ps[i-1],b=ps[i],d=gDist(a,b),dt=(b.t-a.t)/1000;
+    if(!(d>=5&&dt>0&&d/dt<55))continue;
+    const f=(Math.min(b.t,t2)-Math.max(a.t,t1))/(b.t-a.t);   // so a parte do trecho que cai dentro do intervalo
+    if(f>0)m+=d*Math.min(1,f)}
+  return Math.round(m/100)/10}
+async function gpxImport(inp){
+  const fs=[...inp.files];if(!fs.length)return;
+  let add=[];
+  for(const f of fs){try{add=add.concat(gpxPontos(await f.text()))}catch(e){}}
+  inp.value="";
+  if(!add.length)return alert("Não consegui ler pontos com horário nesse arquivo. Precisa ser um GPX gravado por um app de GPS.");
+  TR=TR.concat(add).sort((a,b)=>a.t-b.t);
+  $("gpxInfo").textContent=`Trajeto carregado: ${TR.length} pontos, de ${new Date(TR[0].t).toLocaleString("pt-BR")} até ${new Date(TR[TR.length-1].t).toLocaleString("pt-BR")}.`;
+  gpxApply(true)}
+// preenche a corrida em andamento e recalcula as corridas salvas que tem horarios
+function gpxApply(msg){
+  if(!TR.length)return;
+  let n=0,sem=0;
+  if(M.tA&&M.tP&&M.tF){const kb=trKm(M.tA,M.tP),kc=trKm(M.tP,M.tF);
+    if(kb!=null&&kc!=null){$("rKmB").value=kb||"";$("rKmC").value=kc||"";liveRide();n++}else sem++}
+  let mud=false;
+  for(const r of S.rides){if(!r.mk)continue;
+    const kb=trKm(r.mk.tA,r.mk.tP),kc=trKm(r.mk.tP,r.mk.tF);
+    if(kb==null||kc==null){if(r.pend)sem++;continue}
+    const km=Math.round((kb+kc)*10)/10;
+    if(Math.abs(km-r.km)>=.05||r.pend){S.odo=Math.max(0,S.odo+km-r.km);Object.assign(r,{km,kmB:kb,kmC:kc,pend:false});mud=true;n++}}
+  if(mud){save();render()}
+  mkUI();
+  if(msg)toast(n?`✔ Km calculados em ${n} corrida(s)`+(sem?` · ${sem} sem trajeto`:""):sem?`Nenhuma corrida está dentro do trajeto importado`:"Trajeto carregado");}
+mkUI();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{});
+if(CFG.url&&CFG.key)initAuth();else start();
+</script>
+</body>
+</html>
