@@ -211,7 +211,7 @@ button.big{padding:16px;font-size:18px}
 <section class="tab" id="t-contas">
   <div class="card"><h2>Saldos</h2><div id="cSaldos"></div></div>
   <div class="card"><h2>Dividir saque</h2>
-    <label>De onde veio</label><select id="sqOrig"><option>99</option><option>Uber</option><option>iFood</option><option>Outro</option></select>
+    <label>De onde veio</label><select id="sqOrig"><option>99</option><option>Uber</option><option>iFood</option><option>Rappi</option><option>Shopee</option><option>Mercado Livre</option><option>Amazon</option><option>Loggi</option><option>Lalamove</option><option>Outro</option></select>
     <label>Valor sacado (R$)</label><input id="sqVal" type="number" inputmode="decimal" placeholder="ex: 500,00" oninput="sqCalc()">
     <label>Data</label><input id="sqDate" type="date">
     <label style="margin-top:14px">Quanto vai para cada conta</label>
@@ -301,8 +301,8 @@ button.big{padding:16px;font-size:18px}
 </nav>
 
 <script>
-const CATS={c99:"99 Corrida",e99:"99 Entregas",cuber:"Uber Corrida",euber:"Uber Entregas",ifood:"iFood",trabalho:"Trabalho / deslocamento",pessoal:"Pessoal / lazer",uber:"Uber",n99:"99",entrega:"Entrega"};
-const CATS_NOVAS=["c99","e99","cuber","euber","ifood","trabalho","pessoal"]; // uber/n99/entrega ficam só para registros antigos
+const CATS={c99:"99 Corrida",e99:"99 Entregas",cuber:"Uber Corrida",euber:"Uber Entregas",ifood:"iFood",rappi:"Rappi",shopee:"Shopee",mlivre:"Mercado Livre",amazon:"Amazon",loggi:"Loggi",lalamove:"Lalamove",outroapp:"Outro app / particular",trabalho:"Trabalho / deslocamento",pessoal:"Pessoal / lazer",uber:"Uber",n99:"99",entrega:"Entrega"};
+const CATS_NOVAS=["c99","e99","cuber","euber","ifood","rappi","shopee","mlivre","amazon","loggi","lalamove","outroapp","trabalho","pessoal"]; // uber/n99/entrega ficam só para registros antigos
 const ECATS=["Manutenção","Peças","Óleo","Pedágio","Estacionamento","Lavagem","Café da manhã","Almoço","Janta","Multa","Documentação/IPVA","Seguro","Taxa 99","Taxa Uber","Taxa iFood","Contas da moto","Outros"];
 const TAXA_CATS=["Taxa 99","Taxa Uber","Taxa iFood"]; // taxa/plano diario cobrado pela plataforma: abate o lucro do dia da plataforma
 const platOf=c=>({c99:"99",e99:"99",n99:"99",cuber:"Uber",euber:"Uber",uber:"Uber",ifood:"iFood"})[c]||null;
