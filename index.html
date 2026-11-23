@@ -9,7 +9,7 @@
 <script src="config.js"></script>
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon.svg">
-<title>MotoExtra</title>
+<title>Rendex</title>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--tx:#f1f5f9;--mut:#94a3b8;--ac:#f97316;--ok:#22c55e;--bad:#ef4444;--warn:#eab308}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -62,7 +62,7 @@ button.big{padding:16px;font-size:18px}
 </head>
 <body>
 <div id="auth" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto"><div style="max-width:420px;margin:0 auto;padding:40px 20px">
-  <div style="text-align:center;font-size:56px">🏍️</div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">MotoExtra</h1>
+  <div style="text-align:center;font-size:56px">🏍️</div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">Rendex</h1>
   <div class="hint" style="text-align:center;margin:0 0 20px">Controle de ganhos, gastos e manutenção da sua moto</div>
   <div class="card"><h2 id="aTitle">Entrar</h2>
     <label>E-mail</label><input id="aMail" type="email" autocomplete="email" inputmode="email">
@@ -80,7 +80,7 @@ button.big{padding:16px;font-size:18px}
     <button id="pwBtn2" class="sec" onclick="recheck()">Já paguei — verificar</button>
     <button class="sec" onclick="sair()">Sair</button></div>
   <div class="hint">O pagamento é feito no Mercado Pago, com Pix ou cartão. Seu acesso é liberado automaticamente em instantes e seus dados continuam guardados.</div></div></div>
-<header><h1><button class="menu" onclick="menu(true)" aria-label="Abrir menu">☰</button><span id="hdrAv" onclick="goTab('perfil')" style="cursor:pointer;display:inline-flex;vertical-align:middle;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card2);align-items:center;justify-content:center;font-size:18px;margin-right:6px">🏍️</span><span id="hdrT">MotoExtra</span> <small id="syncSt" style="font-size:11px;color:var(--mut);font-weight:400"></small></h1><div class="odo" id="odoBtn" onclick="setOdo()"><small id="odoLbl">Odômetro</small><span id="odoV">-</span></div></header>
+<header><h1><button class="menu" onclick="menu(true)" aria-label="Abrir menu">☰</button><span id="hdrAv" onclick="goTab('perfil')" style="cursor:pointer;display:inline-flex;vertical-align:middle;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card2);align-items:center;justify-content:center;font-size:18px;margin-right:6px">🏍️</span><span id="hdrT">Rendex</span> <small id="syncSt" style="font-size:11px;color:var(--mut);font-weight:400"></small></h1><div class="odo" id="odoBtn" onclick="setOdo()"><small id="odoLbl">Odômetro</small><span id="odoV">-</span></div></header>
 <main>
 <div id="banner"></div>
 
@@ -283,13 +283,13 @@ button.big{padding:16px;font-size:18px}
     <details><summary>Instalar no celular</summary><p class="hint">No Chrome, abra o menu (⋮) e escolha "Instalar app" ou "Adicionar à tela inicial". No iPhone, use Compartilhar → Adicionar à Tela de Início.</p></details>
   </div>
 </section>
-<div class="hint" style="text-align:center;margin:16px 0">MotoExtra v11</div>
+<div class="hint" style="text-align:center;margin:16px 0">Rendex v11</div>
 </main>
 
 <div id="toast"></div>
 <div id="navBg" onclick="menu(false)"></div>
 <nav id="nav">
-  <div class="nvT">🏍️ MotoExtra</div>
+  <div class="nvT">🏍️ Rendex</div>
   <a class="on" data-t="resumo"><span>📊</span>Resumo</a>
   <a data-t="ganhos"><span>💰</span>Ganhos</a>
   <a data-t="corrida"><span>🛵</span>Corridas</a>
@@ -440,7 +440,7 @@ function dueList(){
     .map(m=>({m,used:S.odo-m.last,rest:m.interval-(S.odo-m.last)})).sort((a,b)=>a.rest-b.rest);
 }
 const msgDue=({m,used,rest})=>`${m.name}: ${n1(used)} km rodados — `+(rest<0?`atrasado ${n1(-rest)} km`:m.name.startsWith("Troca de rela")?`agende a troca (faltam ${n1(rest)} km)`:`faltam ${n1(rest)} km`);
-function notifica(l){try{if("Notification"in window&&Notification.permission==="granted")new Notification("MotoExtra",{body:l.map(msgDue).join("\n")})}catch(e){}}
+function notifica(l){try{if("Notification"in window&&Notification.permission==="granted")new Notification("Rendex",{body:l.map(msgDue).join("\n")})}catch(e){}}
 function pedirNotif(){if(!("Notification"in window))return alert("Este navegador não suporta notificações.");
   Notification.requestPermission().then(p=>{alert(p==="granted"?"Notificações ativadas.":"Notificações bloqueadas.");render()})}
 let avisouAbertura=false;
@@ -955,7 +955,7 @@ function resumoPer(p){
 const dec=v=>String(Math.round((v||0)*100)/100).replace(".",",");
 function baixarCSV(){
   const p=$("gPer").value,r=resumoPer(p),b=bikeNow(),q=v=>{v=String(v??"");if(/^[=+\-@]/.test(v)&&!/^-?\d+(,\d+)?$/.test(v))v="'"+v; /* evita formula em planilha */return /[;"\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-  const rows=[["MotoExtra — relatório"],["Veículo",b.name+(b.model?" ("+b.model+")":"")],["Período",r.label],["Gerado em",fdate(today())],[],
+  const rows=[["Rendex — relatório"],["Veículo",b.name+(b.model?" ("+b.model+")":"")],["Período",r.label],["Gerado em",fdate(today())],[],
     ["RESUMO"],["Ganhos brutos",dec(r.bruto)],["Combustível",dec(r.comb)],["Manutenção e peças",dec(r.man)],["Alimentação",dec(r.ali)],["Taxas das plataformas",dec(r.tax)],["Outros gastos",dec(r.outros)],
     ["Lucro da moto",dec(r.oper)],["Contas pagas",dec(r.contas)],["Lucro final",dec(r.final)],["Km rodados",dec(r.km)],[],
     ["CORRIDAS"],["Data","Hora","Tipo","Km até o embarque","Km da corrida","Km total","Valor (R$)"],
@@ -972,11 +972,11 @@ function relatorioPDF(){
   if(!w)return alert("O navegador bloqueou a janela do relatório. Permita pop-ups para este site e tente de novo.");
   const L=(t,v,bold)=>`<tr${bold?' class="tot"':""}><td>${t}</td><td class="n">${brl(v)}</td></tr>`;
   const T=(h,rows)=>`<table><tr>${h.map((x,i)=>`<th${i>=h.length-1?' class="n"':""}>${x}</th>`).join("")}</tr>${rows.map(c=>`<tr>${c.map((x,i)=>`<td${i>=c.length-1?' class="n"':""}>${esc(x)}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${h.length}">Sem registros.</td></tr>`}</table>`;
-  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório MotoExtra</title><style>
+  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório Rendex</title><style>
     body{font:13px system-ui,Arial;margin:22px;color:#111}h1{font-size:20px;margin:0}h2{font-size:14px;margin:18px 0 6px}
     .sub{color:#555;margin:2px 0 10px}table{width:100%;border-collapse:collapse}td,th{padding:4px 6px;border-bottom:1px solid #ddd;text-align:left}
     .n{text-align:right}.tot td{font-weight:700;border-top:2px solid #111}</style></head><body>
-    <h1>MotoExtra — relatório</h1><div class="sub">${esc(b.name)}${b.model?" · "+esc(b.model):""}${b.plate?" · "+esc(b.plate):""} · ${esc(r.label)} · gerado em ${fdate(today())}</div>
+    <h1>Rendex — relatório</h1><div class="sub">${esc(b.name)}${b.model?" · "+esc(b.model):""}${b.plate?" · "+esc(b.plate):""} · ${esc(r.label)} · gerado em ${fdate(today())}</div>
     <h2>Resumo</h2><table>${L("Ganhos brutos",r.bruto)}${L("− Combustível",r.comb)}${L("− Manutenção e peças",r.man)}${L("− Alimentação",r.ali)}${L("− Taxas das plataformas",r.tax)}${L("− Outros gastos",r.outros)}${L("Lucro da moto",r.oper,1)}${L("− Contas pagas",r.contas)}${L("Lucro final",r.final,1)}</table>
     <div class="sub">${n1(r.km)} km rodados${r.km?" · ganho de "+brl(r.bruto/r.km)+" por km":""}</div>
     <h2>Corridas</h2>${T(["Data","Hora","Tipo","Km","Valor"],r.rd.map(x=>[fdate(x.date),x.hora||"",CATS[x.cat]||x.cat,n1(x.km)+" km",brl(x.gain)]))}
@@ -1072,7 +1072,7 @@ $("nav").onclick=e=>{const a=e.target.closest("a");if(!a)return;
   document.querySelectorAll("nav a").forEach(x=>x.classList.toggle("on",x===a));
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id==="t-"+a.dataset.t));
   if(a.dataset.t==="abast"&&S.odo!=null&&!$("fOdo").value)$("fOdo").value=S.odo;scrollTo(0,0);
-  $("hdrT").textContent=a.dataset.t==="resumo"?"MotoExtra":a.textContent.replace(a.firstChild.textContent,"").trim();menu(false)};
+  $("hdrT").textContent=a.dataset.t==="resumo"?"Rendex":a.textContent.replace(a.firstChild.textContent,"").trim();menu(false)};
 function menu(on){$("nav").classList.toggle("open",on);$("navBg").classList.toggle("open",on)}
 { // gesto: puxar da esquerda para a direita abre o menu; da direita para a esquerda fecha
   let x0=null,y0=0;
