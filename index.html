@@ -63,7 +63,7 @@ button.big{padding:16px;font-size:18px}
 <body>
 <div id="auth" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto"><div style="max-width:420px;margin:0 auto;padding:40px 20px">
   <div style="text-align:center;font-size:56px">🏍️</div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">Rendex</h1>
-  <div class="hint" style="text-align:center;margin:0 0 20px">Controle de ganhos, gastos e manutenção da sua moto</div>
+  <div class="hint" style="text-align:center;margin:0 0 20px">Controle de ganhos, gastos e manutenção do seu veículo</div>
   <div class="card"><h2 id="aTitle">Entrar</h2>
     <label>E-mail</label><input id="aMail" type="email" autocomplete="email" inputmode="email">
     <label>Senha</label><input id="aPass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
@@ -94,7 +94,7 @@ button.big{padding:16px;font-size:18px}
   <div class="card"><h2>Ganhos x gastos — últimos 14 dias</h2><div id="chDays"></div>
     <div class="hint"><span style="color:var(--ac)">■</span> ganho &nbsp;<span style="color:var(--bad)">■</span> gasto &nbsp;<span style="color:var(--warn)">┅</span> meta</div></div>
   <div class="card"><h2>Consumo por tanque (km/l)</h2><div id="chKml"></div></div>
-  <div class="card"><h2>Custo por km da moto</h2><div id="costBox"></div></div>
+  <div class="card"><h2>Custo por km do veículo</h2><div id="costBox"></div></div>
   <div class="card"><h2>Resultado</h2><div class="grid" id="resGrid"></div></div>
   <div class="card"><h2>Gastos por categoria</h2><div id="chCat"></div></div>
   <div class="card"><h2>Por tipo de corrida</h2><div id="porTipo"></div></div>
@@ -109,7 +109,7 @@ button.big{padding:16px;font-size:18px}
   <div class="card"><h2>Relatório do período</h2>
     <button class="sec" onclick="baixarCSV()">Baixar planilha (CSV)</button>
     <button class="sec" onclick="relatorioPDF()">Relatório em PDF (imprimir)</button>
-    <div class="hint">Usa o período escolhido acima e a moto selecionada. A planilha abre no Excel ou no Google Planilhas. No PDF, escolha "Salvar como PDF" na impressão.</div></div>
+    <div class="hint">Usa o período escolhido acima e o veículo selecionado. A planilha abre no Excel ou no Google Planilhas. No PDF, escolha "Salvar como PDF" na impressão.</div></div>
   <div class="card"><h2>Ganho por plataforma</h2><div id="gPlat"></div></div>
   <div class="card"><h2>⏰ Melhor horário para rodar</h2><div id="gHora"></div>
     <details id="tuBox" style="margin-top:10px"><summary>Meus turnos de trabalho</summary>
@@ -156,10 +156,10 @@ button.big{padding:16px;font-size:18px}
     <button onclick="jSalvar()">Salvar jornada</button>
     <div id="jList" style="margin-top:8px"></div></div>
   <div class="card"><h2>🏁 Fechar o dia</h2>
-    <label>Odômetro da moto agora (km)</label><input id="fcOdo" type="number" inputmode="decimal" placeholder="o total que aparece no painel" onkeydown="if(event.key==='Enter'){event.preventDefault();fecharDia()}">
+    <label>Odômetro do veículo agora (km)</label><input id="fcOdo" type="number" inputmode="decimal" placeholder="o total que aparece no painel" onkeydown="if(event.key==='Enter'){event.preventDefault();fecharDia()}">
     <div id="fcInfo" class="hint"></div>
     <button class="big" onclick="fecharDia()">Fechar o dia</button>
-    <div class="hint">Digite o total do painel da moto no fim do dia. O app descobre quantos km foram fora de corrida (trabalho CLT, pessoal) e usa o odômetro real nos avisos de manutenção.</div></div>
+    <div class="hint">Digite o total do painel do veículo no fim do dia. O app descobre quantos km foram fora de corrida (trabalho CLT, pessoal) e usa o odômetro real nos avisos de manutenção.</div></div>
   <div class="card"><h2>Histórico por dia</h2>
     <div class="two"><div><label>De</label><input id="hDe" type="date" onchange="histDias=14;render()"></div><div><label>Até</label><input id="hAte" type="date" onchange="histDias=14;render()"></div></div>
     <div style="display:flex;gap:8px"><button class="sec sm" style="margin-top:10px" onclick="histHoje()">Hoje</button><button class="sec sm" style="margin-top:10px" onclick="histLimpar()">Todos os dias</button></div>
@@ -183,7 +183,7 @@ button.big{padding:16px;font-size:18px}
 
 <section class="tab" id="t-gastos">
   <div class="card"><h2>Contas a pagar</h2><div id="bList"></div>
-    <label>Conta (ex: Parcela da moto, aluguel, luz, cartão)</label><input id="bName" type="text">
+    <label>Conta (ex: Parcela do veículo, aluguel, luz, cartão)</label><input id="bName" type="text">
     <label>Tipo</label><select id="bGrp"><option>Moto</option><option>Casa</option><option>Cartão / dívida</option><option>Outros</option></select>
     <label>Valor (R$)</label><input id="bVal" type="number" inputmode="decimal">
     <label>Vencimento</label><input id="bDue" type="date">
@@ -272,9 +272,9 @@ button.big{padding:16px;font-size:18px}
     <div class="hint">Os dados ficam só neste aparelho. Exporte de vez em quando.</div></div>
   <div class="card"><h2>Ajuda</h2>
     <details><summary>Como registrar uma corrida</summary><p class="hint">Na aba Corridas, escolha o tipo (99, Uber, iFood…), informe os km até buscar o cliente e os km da corrida, e o valor total. O app soma tudo no odômetro e calcula ganho por km, custo e lucro da corrida.</p></details>
-    <details><summary>Como o custo por km é calculado</summary><p class="hint">Combustível = preço do litro ÷ consumo (km/l). Manutenção = custo de cada item ÷ intervalo em km (ex.: óleo de R$ 50 a cada 1.000 km = R$ 0,05/km). Defina os custos na aba Manutenção, em Editar. O total é o custo por km da moto.</p></details>
-    <details><summary>Como o lucro é calculado</summary><p class="hint">Na aba Ganhos: ganhos brutos − combustível − manutenção − alimentação − outros gastos = lucro da moto. Descontando as contas pagas, chega-se ao lucro final.</p></details>
-    <details><summary>Uso a moto também fora das corridas (CLT, pessoal)</summary><p class="hint">Na aba Corridas, use "Fechar o dia": digite o odômetro do painel no fim do dia. O app calcula quantos km foram fora de corrida e passa a usar o odômetro real nos lembretes de manutenção (óleo, relação…). Os km fora de corrida não entram no ganho por km.</p></details>
+    <details><summary>Como o custo por km é calculado</summary><p class="hint">Combustível = preço do litro ÷ consumo (km/l). Manutenção = custo de cada item ÷ intervalo em km (ex.: óleo de R$ 50 a cada 1.000 km = R$ 0,05/km). Defina os custos na aba Manutenção, em Editar. O total é o custo por km do veículo.</p></details>
+    <details><summary>Como o lucro é calculado</summary><p class="hint">Na aba Ganhos: ganhos brutos − combustível − manutenção − alimentação − outros gastos = lucro do veículo. Descontando as contas pagas, chega-se ao lucro final.</p></details>
+    <details><summary>Uso o veículo também fora das corridas (CLT, pessoal)</summary><p class="hint">Na aba Corridas, use "Fechar o dia": digite o odômetro do painel no fim do dia. O app calcula quantos km foram fora de corrida e passa a usar o odômetro real nos lembretes de manutenção (óleo, relação…). Os km fora de corrida não entram no ganho por km.</p></details>
     <details><summary>Carteira: contas e divisão do saque</summary><p class="hint">Cadastre as contas (ex.: lucro, manutenção, gastos diários) na aba Carteira. Ao sacar da 99 ou da Uber, use "Dividir saque" para repartir o valor. Nos gastos e abastecimentos, escolha "Pagar com" para o saldo da conta cair sozinho. O saldo é calculado pelo app, não é ligado ao banco.</p></details>
     <details><summary>Taxa diária da 99 (ou Uber, iFood)</summary><p class="hint">Na aba Gastos, em "Taxa diária da plataforma", informe o valor (ex.: 3,99) e ative. O app lança a taxa na primeira corrida do dia daquela plataforma e desconta do lucro do dia. No histórico de corridas aparece o líquido da plataforma, que deve bater com o valor do saque. Para lançar à mão, use "Lançar a taxa de hoje agora" ou escolha a categoria "Taxa 99" nos gastos.</p></details>
     <details><summary>Lembretes de manutenção</summary><p class="hint">Cada item avisa quando você roda a quantidade de km definida desde a última vez. Toque em "Feito" quando fizer o serviço para zerar a contagem.</p></details>
@@ -357,7 +357,7 @@ function inPer(d,p=$("per").value){
   return d>=new Date(lim-lim.getTimezoneOffset()*6e4).toISOString().slice(0,10);
 }
 function setOdo(){
-  const v=prompt("Quilometragem atual da moto (km):",S.odo??"");
+  const v=prompt("Quilometragem atual do veículo (km):",S.odo??"");
   if(v===null)return;const n=num(v);if(isNaN(n)||n<0)return;
   const first=S.odo==null;S.odo=n;
   if(first)S.maint.forEach(m=>{if(m.last==null)m.last=n});
@@ -597,7 +597,7 @@ function doneMaint(id){const m=S.maint.find(x=>x.id===id);
   const p=prompt("Quanto pagou (R$)? 0 = não lançar como gasto",m.cost||0);
   const c=num(p);if(c>0){m.cost=c;S.exps.push({id:uid(),date:today(),cat:"Manutenção",val:c,note:m.name})}
   m.last=n;m.date=today();save();render()}
-function setKml(){const v=prompt("Consumo da moto (km por litro):",S.cfg.kml||40);if(v===null)return;const n=num(v);if(n>0){S.cfg.kml=n;save();render()}}
+function setKml(){const v=prompt("Consumo do veículo (km por litro):",S.cfg.kml||40);if(v===null)return;const n=num(v);if(n>0){S.cfg.kml=n;save();render()}}
 function setPreco(){const v=prompt("Preço do litro (R$) — usado até você lançar um abastecimento:",S.cfg.price||"");if(v===null)return;const n=num(v);if(n>0){S.cfg.price=n;save();render()}}
 function toggleAuto(){S.cfg.auto=!S.cfg.auto;save();render()}
 function editMaint(id){const m=S.maint.find(x=>x.id===id);
@@ -627,9 +627,9 @@ function renderGanhos(){
   const L=(t,v,o={})=>`<div class="row" style="${o.b?"font-weight:700;":""}${o.top?"border-top:2px solid #475569;":""}"><span>${t}</span><span class="${o.c||""}">${o.neg&&v?"− ":""}${brl(v)}</span></div>`;
   const cl=v=>v>=0?"pos":"neg";
   $("gBox").innerHTML=L("Ganhos brutos",bruto,{b:1,c:"pos"})+L("Combustível",comb,{neg:1})+L("Manutenção e peças",man,{neg:1})+L("Alimentação",ali,{neg:1})+L("Taxas das plataformas",tax,{neg:1})+L("Outros gastos",outros,{neg:1})
-    +L("Lucro da moto",oper,{b:1,top:1,c:cl(oper)})+L("Contas pagas",contas,{neg:1})+L("💰 LUCRO FINAL",final,{b:1,top:1,c:cl(final)})
-    +`<div class="hint">Lucro final = o que sobrou no bolso depois dos gastos e das contas pagas.<br>Considerando o desgaste da moto (provisão de manutenção de ${brl(prov)} nos ${n1(km)} km rodados): <b class="${cl(final-prov)}">${brl(final-prov)}</b></div>
-    <div class="grid" style="margin-top:10px">${dias?`<div class="stat"><b>${brl(bruto/dias)}</b><span>Ganho médio por dia trabalhado (${dias} dia${dias>1?"s":""})</span></div><div class="stat"><b>${brl(oper/dias)}</b><span>Lucro da moto por dia</span></div>`:""}${km?`<div class="stat"><b>${brl(bruto/km)}</b><span>Ganho por km</span></div><div class="stat"><b>${n1(bruto?oper/bruto*100:0)}%</b><span>do ganho vira lucro</span></div>`:""}</div>`;
+    +L("Lucro do veículo",oper,{b:1,top:1,c:cl(oper)})+L("Contas pagas",contas,{neg:1})+L("💰 LUCRO FINAL",final,{b:1,top:1,c:cl(final)})
+    +`<div class="hint">Lucro final = o que sobrou no bolso depois dos gastos e das contas pagas.<br>Considerando o desgaste do veículo (provisão de manutenção de ${brl(prov)} nos ${n1(km)} km rodados): <b class="${cl(final-prov)}">${brl(final-prov)}</b></div>
+    <div class="grid" style="margin-top:10px">${dias?`<div class="stat"><b>${brl(bruto/dias)}</b><span>Ganho médio por dia trabalhado (${dias} dia${dias>1?"s":""})</span></div><div class="stat"><b>${brl(oper/dias)}</b><span>Lucro do veículo por dia</span></div>`:""}${km?`<div class="stat"><b>${brl(bruto/km)}</b><span>Ganho por km</span></div><div class="stat"><b>${n1(bruto?oper/bruto*100:0)}%</b><span>do ganho vira lucro</span></div>`:""}</div>`;
   const by={};rd.forEach(r=>{const o=by[r.cat]||(by[r.cat]={km:0,g:0,n:0});o.km+=r.km;o.g+=r.gain;o.n++});
   const pk=Object.keys(by).sort((a,b)=>by[b].g-by[a].g);
   $("gPlat").innerHTML=pk.map(k=>{const o=by[k],pc=bruto?o.g/bruto*100:0;
@@ -762,7 +762,7 @@ function setFoto(el){const f=el.files[0];if(!f)return;
 // Fechar o dia: o usuario digita o odometro real do painel; a diferenca para o que o app contou vira "km fora de corrida" (CLT, pessoal)
 function fecharDia(){
   const l=num($("fcOdo").value);
-  if(!(l>0))return alert("Digite o odômetro da moto (o total que aparece no painel).");
+  if(!(l>0))return alert("Digite o odômetro do veículo (o total que aparece no painel).");
   ajustaOdo(l,today(),true);
 }
 function ajustaOdo(leitura,date,fecha){
@@ -770,7 +770,7 @@ function ajustaOdo(leitura,date,fecha){
   if(S.odo==null){S.odo=leitura;S.maint.forEach(m=>{if(m.last==null)m.last=leitura});reg();save();render();return toast("✔ Odômetro definido")}
   const diff=leitura-S.odo;
   if(!S.fechou.length&&fecha){ // primeira vez: calibra o odometro do app com o da moto
-    if(!confirm(`O odômetro do app (${n1(S.odo)} km) vai passar a ser o da moto (${n1(leitura)} km). Os avisos de manutenção continuam corretos. Confirmar?`))return;
+    if(!confirm(`O odômetro do app (${n1(S.odo)} km) vai passar a ser o do veículo (${n1(leitura)} km). Os avisos de manutenção continuam corretos. Confirmar?`))return;
     S.maint.forEach(m=>{if(m.last!=null)m.last+=diff});S.odo=leitura;reg();save();$("fcOdo").value="";render();return toast("✔ Odômetro calibrado")}
   if(diff<0){
     if(!confirm(`A leitura (${n1(leitura)} km) é MENOR que o total do app (${n1(S.odo)} km). Pode haver corrida lançada a mais. Ajustar o odômetro para ${n1(leitura)} km?`))return;
@@ -782,7 +782,7 @@ function ajustaOdo(leitura,date,fecha){
 function delExt(id){if(!confirm("Remover este registro de km fora de corrida? O odômetro não muda."))return;S.ext=S.ext.filter(e=>e.id!==id);save();render()}
 function renderFecha(){
   const u=S.fechou[S.fechou.length-1];
-  $("fcInfo").innerHTML=`Odômetro no app agora: <b>${S.odo==null?"-":n1(S.odo)+" km"}</b>`+(u?` · último fechamento: ${fdate(u.date)} (${n1(u.odo)} km)`:" · ainda sem fechamento: o primeiro calibra o odômetro do app com o da moto");
+  $("fcInfo").innerHTML=`Odômetro no app agora: <b>${S.odo==null?"-":n1(S.odo)+" km"}</b>`+(u?` · último fechamento: ${fdate(u.date)} (${n1(u.odo)} km)`:" · ainda sem fechamento: o primeiro calibra o odômetro do app com o do veículo");
 }
 let histDias=14;
 function histHoje(){$("hDe").value=$("hAte").value=today();histDias=14;render()}
@@ -929,10 +929,10 @@ function renderBikes(){
   $("odoLbl").textContent="Odômetro"+(S.bikes.length>1?" · "+bikeNow().name.slice(0,14):"");
 }
 function renderHelp(){ // primeiros passos: some quando tudo estiver feito ou quando o usuario ocultar
-  const steps=[[S.odo!=null,"Informar o odômetro atual da moto","setOdo()"],
+  const steps=[[S.odo!=null,"Informar o odômetro atual do veículo","setOdo()"],
     [S.rides.length>0,"Registrar a primeira corrida","goTab('corrida')"],
     [S.fuels.length>0,"Lançar um abastecimento","goTab('abast')"],
-    [S.fechou.length>0,"Fechar o dia com o odômetro real da moto","goTab('corrida')"],
+    [S.fechou.length>0,"Fechar o dia com o odômetro real do veículo","goTab('corrida')"],
     [S.contas.length>0,"Cadastrar as suas contas na Carteira","goTab('contas')"],
     [S.goal>0,"Definir a meta diária de ganho","setGoal()"],
     [S.maint.some(m=>m.cost>0),"Informar o custo dos itens de manutenção","goTab('manut')"],
@@ -957,7 +957,7 @@ function baixarCSV(){
   const p=$("gPer").value,r=resumoPer(p),b=bikeNow(),q=v=>{v=String(v??"");if(/^[=+\-@]/.test(v)&&!/^-?\d+(,\d+)?$/.test(v))v="'"+v; /* evita formula em planilha */return /[;"\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const rows=[["Rendex — relatório"],["Veículo",b.name+(b.model?" ("+b.model+")":"")],["Período",r.label],["Gerado em",fdate(today())],[],
     ["RESUMO"],["Ganhos brutos",dec(r.bruto)],["Combustível",dec(r.comb)],["Manutenção e peças",dec(r.man)],["Alimentação",dec(r.ali)],["Taxas das plataformas",dec(r.tax)],["Outros gastos",dec(r.outros)],
-    ["Lucro da moto",dec(r.oper)],["Contas pagas",dec(r.contas)],["Lucro final",dec(r.final)],["Km rodados",dec(r.km)],[],
+    ["Lucro do veículo",dec(r.oper)],["Contas pagas",dec(r.contas)],["Lucro final",dec(r.final)],["Km rodados",dec(r.km)],[],
     ["CORRIDAS"],["Data","Hora","Tipo","Km até o embarque","Km da corrida","Km total","Valor (R$)"],
     ...r.rd.map(x=>[fdate(x.date),x.hora||"",CATS[x.cat]||x.cat,x.kmB!=null?dec(x.kmB):"",x.kmC!=null?dec(x.kmC):"",dec(x.km),dec(x.gain)]),[],
     ["ABASTECIMENTOS"],["Data","Odômetro","Litros","Valor (R$)","R$/litro"],
@@ -977,7 +977,7 @@ function relatorioPDF(){
     .sub{color:#555;margin:2px 0 10px}table{width:100%;border-collapse:collapse}td,th{padding:4px 6px;border-bottom:1px solid #ddd;text-align:left}
     .n{text-align:right}.tot td{font-weight:700;border-top:2px solid #111}</style></head><body>
     <h1>Rendex — relatório</h1><div class="sub">${esc(b.name)}${b.model?" · "+esc(b.model):""}${b.plate?" · "+esc(b.plate):""} · ${esc(r.label)} · gerado em ${fdate(today())}</div>
-    <h2>Resumo</h2><table>${L("Ganhos brutos",r.bruto)}${L("− Combustível",r.comb)}${L("− Manutenção e peças",r.man)}${L("− Alimentação",r.ali)}${L("− Taxas das plataformas",r.tax)}${L("− Outros gastos",r.outros)}${L("Lucro da moto",r.oper,1)}${L("− Contas pagas",r.contas)}${L("Lucro final",r.final,1)}</table>
+    <h2>Resumo</h2><table>${L("Ganhos brutos",r.bruto)}${L("− Combustível",r.comb)}${L("− Manutenção e peças",r.man)}${L("− Alimentação",r.ali)}${L("− Taxas das plataformas",r.tax)}${L("− Outros gastos",r.outros)}${L("Lucro do veículo",r.oper,1)}${L("− Contas pagas",r.contas)}${L("Lucro final",r.final,1)}</table>
     <div class="sub">${n1(r.km)} km rodados${r.km?" · ganho de "+brl(r.bruto/r.km)+" por km":""}</div>
     <h2>Corridas</h2>${T(["Data","Hora","Tipo","Km","Valor"],r.rd.map(x=>[fdate(x.date),x.hora||"",CATS[x.cat]||x.cat,n1(x.km)+" km",brl(x.gain)]))}
     <h2>Abastecimentos</h2>${T(["Data","Odômetro","Litros","Valor"],r.fu.map(x=>[fdate(x.date),n1(x.odo)+" km",n1(x.l)+" L",brl(x.t)]))}
