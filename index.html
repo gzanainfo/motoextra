@@ -62,7 +62,7 @@ button.big{padding:16px;font-size:18px}
 </head>
 <body>
 <div id="auth" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto"><div style="max-width:420px;margin:0 auto;padding:40px 20px">
-  <div style="text-align:center;font-size:56px">🏍️</div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">Rendex</h1>
+  <div style="text-align:center"><img src="icon.svg" alt="" width="84" height="84" style="border-radius:20px"></div><h1 style="text-align:center;font-size:24px;margin:6px 0 4px">Rendex</h1>
   <div class="hint" style="text-align:center;margin:0 0 20px">Controle de ganhos, gastos e manutenção do seu veículo</div>
   <div class="card"><h2 id="aTitle">Entrar</h2>
     <label>E-mail</label><input id="aMail" type="email" autocomplete="email" inputmode="email">
@@ -80,7 +80,7 @@ button.big{padding:16px;font-size:18px}
     <button id="pwBtn2" class="sec" onclick="recheck()">Já paguei — verificar</button>
     <button class="sec" onclick="sair()">Sair</button></div>
   <div class="hint">O pagamento é feito no Mercado Pago, com Pix ou cartão. Seu acesso é liberado automaticamente em instantes e seus dados continuam guardados.</div></div></div>
-<header><h1><button class="menu" onclick="menu(true)" aria-label="Abrir menu">☰</button><span id="hdrAv" onclick="goTab('perfil')" style="cursor:pointer;display:inline-flex;vertical-align:middle;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card2);align-items:center;justify-content:center;font-size:18px;margin-right:6px">🏍️</span><span id="hdrT">Rendex</span> <small id="syncSt" style="font-size:11px;color:var(--mut);font-weight:400"></small></h1><div class="odo" id="odoBtn" onclick="setOdo()"><small id="odoLbl">Odômetro</small><span id="odoV">-</span></div></header>
+<header><h1><button class="menu" onclick="menu(true)" aria-label="Abrir menu">☰</button><span id="hdrAv" onclick="goTab('perfil')" style="cursor:pointer;display:inline-flex;vertical-align:middle;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card2);align-items:center;justify-content:center;font-size:18px;margin-right:6px"><img src="icon.svg" alt="" style="width:100%;height:100%;object-fit:cover"></span><span id="hdrT">Rendex</span> <small id="syncSt" style="font-size:11px;color:var(--mut);font-weight:400"></small></h1><div class="odo" id="odoBtn" onclick="setOdo()"><small id="odoLbl">Odômetro</small><span id="odoV">-</span></div></header>
 <main>
 <div id="banner"></div>
 
@@ -249,7 +249,7 @@ button.big{padding:16px;font-size:18px}
 <section class="tab" id="t-perfil">
   <div class="card"><h2>Meu perfil</h2>
     <div style="display:flex;gap:14px;align-items:center">
-      <div id="pfAv" style="width:76px;height:76px;flex:none;border-radius:50%;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:34px">🏍️</div>
+      <div id="pfAv" style="width:76px;height:76px;flex:none;border-radius:50%;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:34px"><img src="icon.svg" alt="" style="width:100%;height:100%;object-fit:cover"></div>
       <div style="flex:1"><label style="margin-top:0">Seu nome</label><input id="pfName" type="text" maxlength="40" placeholder="Como quer ser chamado" onchange="setNome()"></div></div>
     <div style="display:flex;gap:8px"><button class="sec" onclick="$('pfFile').click()">Trocar foto</button><button class="sec" onclick="delFoto()">Remover foto</button></div>
     <input id="pfFile" type="file" accept="image/*" hidden onchange="setFoto(this)"></div>
@@ -289,7 +289,7 @@ button.big{padding:16px;font-size:18px}
 <div id="toast"></div>
 <div id="navBg" onclick="menu(false)"></div>
 <nav id="nav">
-  <div class="nvT">🏍️ Rendex</div>
+  <div class="nvT">Rendex</div>
   <a class="on" data-t="resumo"><span>📊</span>Resumo</a>
   <a data-t="ganhos"><span>💰</span>Ganhos</a>
   <a data-t="corrida"><span>🛵</span>Corridas</a>
@@ -747,7 +747,7 @@ function renderPerfil(){
   const p=S.profile||{},ph=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p.photo||"")?p.photo:"";
   const ini=(p.name||"").trim().charAt(0).toUpperCase();
   ["hdrAv","pfAv"].forEach(id=>{const e=$(id);
-    if(ph)e.innerHTML=`<img src="${ph}" alt="" style="width:100%;height:100%;object-fit:cover">`;else e.textContent=ini||"🏍️"});
+    if(ph)e.innerHTML=`<img src="${ph}" alt="" style="width:100%;height:100%;object-fit:cover">`;else if(ini)e.textContent=ini;else e.innerHTML='<img src="icon.svg" alt="" style="width:100%;height:100%;object-fit:cover">'});
   if(document.activeElement!==$("pfName"))$("pfName").value=p.name||"";
 }
 function setNome(){S.profile.name=$("pfName").value.trim();save();render()}
